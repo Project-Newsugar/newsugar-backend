@@ -47,6 +47,10 @@ dependencies {
 
 	//Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// Monitoring & Tracing
+	implementation 'io.micrometer:micrometer-registry-cloudwatch2'
+	implementation 'com.amazonaws:aws-xray-recorder-sdk-spring:2.14.0'
 }
 
 tasks.named('test') {
