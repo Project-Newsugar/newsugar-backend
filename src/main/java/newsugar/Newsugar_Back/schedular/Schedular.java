@@ -38,6 +38,8 @@ public class Schedular {
         }
         isCategoryTaskRunning = true;
         try {
+            // 중복 실행 방지: 스케줄러가 너무 빨리 돌아서 이전 작업이 끝나기 전에 또 실행되는 것을 방지
+            // 하지만 카테고리별로 루프를 돌기 때문에 전체 작업 시간은 길어질 수 있음
             for (String category : categories) {
                 try {
                     String summary = categorySummaryService.generateCategorySummary(category);
@@ -45,7 +47,7 @@ public class Schedular {
                     System.out.println("Category: " + category + ", Summary: " + summary);
                     
                     // API 쿼터 제한을 피하기 위해 카테고리 처리 사이에 30초 대기
-                    // 무료 티어 한계로 인해 대기함 (1분 -> 30초 단축)
+                    // 무료 티어 한계로 인해 대기함 (사용자 요청으로 1분 -> 30초 단축)
                     Thread.sleep(30000); 
                 } catch (Exception e) {
                     System.err.println("카테고리 요약 생성 중 오류 발생 (" + category + "): " + e.getMessage());

@@ -86,11 +86,18 @@ public class QuizServiceImpl implements QuizService {
             throw new CustomException(ErrorCode.QUIZ_EXPIRED, "퀴즈 제출 기간이 아닙니다");
         }
 
+        // 중복 제출 체크 (이미 제출한 기록이 있으면 새로 저장하지 않고 기존 결과 반환하거나 에러 처리)
+        // 여기서는 중복 제출을 허용하되, 점수 집계 로직을 보완하거나 프론트엔드 요구사항에 맞춰야 함
+        // 현재는 중복 제출 시 계속 저장되므로 데이터가 쌓이는 구조임
+
         List<Question> qs = quiz.getQuestions() != null ? quiz.getQuestions() : List.of();
         int total = qs.size();
         int correct = 0;
         List<Boolean> results = new ArrayList<>();
         List<SubmissionAnswer> storedAnswers = new ArrayList<>();
+        
+        System.out.println("DEBUG: Quiz ID=" + id + ", User ID=" + userId + ", Received Answers=" + answers);
+
         for (int i = 0; i < total; i++) {
             Integer rawAnswer = (answers != null && i < answers.size()) ? answers.get(i) : null;
             Integer answer = rawAnswer;
@@ -98,6 +105,9 @@ public class QuizServiceImpl implements QuizService {
             // 프론트엔드에서 1-based index(1, 2, 3, 4)로 보내므로 0-based(0, 1, 2, 3)로 변환
             if (answer != null && answer > 0) {
                 answer = answer - 1;
+            } else {
+                // 0이나 음수가 들어오면 오답 처리 (선택 안함 등)
+                answer = -1; 
             }
 
             Integer expected = qs.get(i).getCorrectIndex();
@@ -126,6 +136,10 @@ public class QuizServiceImpl implements QuizService {
         submission.setTotal(total);
         submission.setCorrect(correct);
         submission.setUserId(userId);
+        
+        // 중요: 중복 제출 방지 로직이 없어서 데이터가 계속 쌓임. 
+        // 사용자별 최신 제출만 유지하고 싶다면 여기서 기존 제출을 조회해서 처리해야 함.
+        // 현재는 그대로 저장.
         quizSubmissionRepository.save(submission);
 
         if (userId != null) {

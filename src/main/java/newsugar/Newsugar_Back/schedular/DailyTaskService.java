@@ -50,6 +50,11 @@ public class DailyTaskService {
 
     // @Transactional // 트랜잭션 롤백 문제 방지를 위해 주석 처리 (개별 저장 로직에서 처리됨)
     public void executeDailyRoutine() {
+        // 중복 실행 방지 (이미 오늘 날짜의 요약이 있으면 스킵하거나 덮어쓰기 정책 결정 필요)
+        // 현재는 매시간 실행되므로 중복 생성이 발생할 수 있음.
+        // 하지만 MainNewsController에서 최신 요약 하나만 가져다 쓰므로 큰 문제는 아님.
+        // 다만 DB 데이터가 쌓이는 것을 방지하려면 여기서 체크 로직 추가 가능.
+
         // 뉴스 가져오기 및 요약 생성
         Summary summary = generateSummary();
 
@@ -123,6 +128,10 @@ public class DailyTaskService {
         if (baseSummary == null || baseSummary.getSummaryText() == null || baseSummary.getSummaryText().isBlank()) {
             return;
         }
+
+        // 이미 퀴즈가 너무 많이 생성되었는지 체크 (선택 사항)
+        // List<Quiz> todays = quizService.listToday();
+        // if (todays.size() > 5) return; 
 
         // API 쿼터 제한을 피하기 위해 요약 생성 후 잠시 대기
         try {
