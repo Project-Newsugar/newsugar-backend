@@ -88,32 +88,24 @@ public class MainNewsController {
         }
         List<ArticleDTO> articles = (response != null && response.data() != null) ? response.data() : List.of();
         List<String> summaries = articles.stream()
-                .map(ArticleDTO::summary)
+                .map(ArticleDTO::title) // 요약 대신 제목 사용 (AI 호출 방지)
                 .filter(s -> s != null && !s.isBlank())
-                .map(s -> s.replaceAll("<[^>]*>", " ").replaceAll("&[^;]+;", " ").trim())
-                .filter(s -> !s.isBlank())
+                .limit(5)
                 .toList();
+        
         if (summaries.isEmpty()) {
             return ResponseEntity.ok(ApiResult.ok(""));
         }
-        String todaySummary = geminiService.summarize("오늘 주요", summaries);
 
-        // 생성된 요약을 DB에 저장하여 재접속 시에도 동일한 내용을 보여주도록 함
-        if (todaySummary != null && !todaySummary.isBlank()) {
-            if (todaySummary.length() > 3000) {
-                todaySummary = todaySummary.substring(0, 3000) + "...";
-            }
-            try {
-                Summary newSummary = Summary.builder()
-                        .summaryText(todaySummary)
-                        .build();
-                summaryRepository.save(newSummary);
-            } catch (Exception e) {
-                System.err.println("Failed to save on-demand summary: " + e.getMessage());
-            }
+        // DB에 요약이 없을 경우, 실시간 AI 생성을 하지 않고 제목 목록만 반환 (API 과다 사용 및 불일치 방지)
+        // 정각에 스케줄러가 생성한 요약이 저장될 때까지 임시로 보여줌
+        StringBuilder sb = new StringBuilder();
+        sb.append("현재 AI 요약이 생성 중입니다. 잠시 후 다시 시도해주세요.\n\n[주요 뉴스 헤드라인]\n");
+        for (String s : summaries) {
+            sb.append("- ").append(s).append("\n");
         }
-
-        return ResponseEntity.ok(ApiResult.ok(todaySummary));
+        
+        return ResponseEntity.ok(ApiResult.ok(sb.toString()));
     }
 
     @GetMapping("/today-main-summary-by-time")

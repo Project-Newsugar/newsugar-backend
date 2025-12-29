@@ -26,7 +26,8 @@ public class Schedular {
 
 
     // 로컬에서만 실행
-    @Scheduled(cron = "0 0 * * * *")
+    // API 쿼터 분산을 위해 매시 30분에 실행
+    @Scheduled(cron = "0 30 * * * *")
     public void runDailyTask() {
         for (String category : categories) {
             try {
@@ -44,8 +45,16 @@ public class Schedular {
         }
     }
 
-    @Scheduled(cron = "0 0 0,6,12,18 * * *")
+    @Scheduled(cron = "0 0 * * * *")
     public void generateTodayMainContent() {
         dailyTaskService.executeDailyRoutine();
     }
+
+    // 서버 시작 시 초기 데이터 생성을 위해 실행
+    @EventListener(ApplicationReadyEvent.class)
+    public void initDailyContent() {
+        System.out.println("서버 시작: 초기 뉴스 요약 및 퀴즈 생성 시작...");
+        dailyTaskService.executeDailyRoutine();
+    }
+}
 }
