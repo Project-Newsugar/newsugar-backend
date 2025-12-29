@@ -9,6 +9,9 @@ env:
   ECR_REPOSITORY: newsugar-backend
   ECR_REGISTRY: 061039804626.dkr.ecr.ap-northeast-2.amazonaws.com
 
+permissions:
+  contents: write
+
 jobs:
   build-and-push:
     name: Build and Push
