@@ -46,12 +46,14 @@ public class GeminiService {
         다음 요약문을 바탕으로 1개의 객관식 퀴즈를 생성하라.
         반드시 아래 JSON 형식으로만 출력하라. 마크다운 코드 블록(```json)이나 다른 설명은 절대 포함하지 말고 순수 JSON 문자열만 출력하라.
         
+        정답 인덱스(correctIndex)는 1부터 시작하는 1-based index를 사용하라. (예: 첫 번째 보기가 정답이면 1)
+
         {
           "questions": [
             {
               "text": "질문 내용",
               "options": ["보기1", "보기2", "보기3", "보기4"],
-              "correctIndex": 0,
+              "correctIndex": 1,
               "explanation": "해설"
             }
           ]

@@ -50,16 +50,14 @@ public class DevQuizController {
                 Map<String, Object> qMap = new HashMap<>();
                 qMap.put("index", qIdx++);
                 qMap.put("text", q.getText());
-                qMap.put("correctIndex_0_based", q.getCorrectIndex());
-                qMap.put("correctIndex_1_based_display", (q.getCorrectIndex() != null ? q.getCorrectIndex() + 1 : null));
+                qMap.put("correctIndex_1_based", q.getCorrectIndex());
                 
                 List<Map<String, Object>> options = new ArrayList<>();
                 if (q.getOptions() != null) {
-                    int oIdx = 0;
+                    int oIdx = 1; // 1-based start
                     for (String opt : q.getOptions()) {
                         Map<String, Object> oMap = new HashMap<>();
-                        oMap.put("index_0_based", oIdx);
-                        oMap.put("index_1_based", oIdx + 1);
+                        oMap.put("index_1_based", oIdx);
                         oMap.put("text", opt);
                         oMap.put("isCorrect", (q.getCorrectIndex() != null && q.getCorrectIndex() == oIdx));
                         options.add(oMap);
@@ -99,12 +97,12 @@ public class DevQuizController {
             
             logs.add("Raw Answer: " + rawAnswer);
             
-            // Logic replication from QuizServiceImpl
-            if (answer != null && answer > 0) {
-                answer = answer - 1;
-                logs.add("Converted 1-based to 0-based: " + answer);
+            // Logic replication from QuizServiceImpl (1-based)
+            if (answer == null || answer <= 0) {
+                answer = -1;
+                logs.add("Invalid answer (null or <= 0)");
             } else {
-                logs.add("No valid conversion (answer is null or <= 0)");
+                logs.add("Using 1-based answer: " + answer);
             }
 
             Question q = qs.get(i);

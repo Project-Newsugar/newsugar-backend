@@ -102,18 +102,19 @@ public class QuizServiceImpl implements QuizService {
             Integer rawAnswer = (answers != null && i < answers.size()) ? answers.get(i) : null;
             Integer answer = rawAnswer;
             
-            // 프론트엔드에서 1-based index(1, 2, 3, 4)로 보내므로 0-based(0, 1, 2, 3)로 변환
-            if (answer != null && answer > 0) {
-                answer = answer - 1;
-            } else {
-                // 0이나 음수가 들어오면 오답 처리 (선택 안함 등)
-                answer = -1; 
+            // 프론트엔드에서 1-based index(1, 2, 3, 4)로 보내고, DB에도 1-based로 저장됨
+            if (answer == null || answer <= 0) {
+                // 0이나 음수가 들어오면 오답 처리
+                answer = -1;
             }
+            
+            // 기존 0-based 변환 로직 제거됨 (answer = answer - 1 삭제)
 
             Integer expected = qs.get(i).getCorrectIndex();
             int optionSize = qs.get(i).getOptions() != null ? qs.get(i).getOptions().size() : 0;
             
-            boolean inRange = (answer != null && answer >= 0 && answer < optionSize);
+            // 1부터 optionSize까지가 유효 범위
+            boolean inRange = (answer != null && answer >= 1 && answer <= optionSize);
             boolean ok = (inRange && expected != null && answer.equals(expected));
             
             System.out.println("Quiz Scoring - Q[" + i + "] UserRaw: " + rawAnswer + ", UserAdj: " + answer + ", Expected: " + expected + ", Correct: " + ok);
