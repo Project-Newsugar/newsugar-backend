@@ -1,7 +1,7 @@
 package newsugar.Newsugar_Back.domain.news.service;
 
 import io.github.cdimascio.dotenv.Dotenv;
-import newsugar.Newsugar_Back.domain.news.dto.deepserviceDTO.DeepSearchResponseDTO;
+import newsugar.Newsugar_Back.domain.news.dto.deepservicedto.DeepSearchResponseDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;

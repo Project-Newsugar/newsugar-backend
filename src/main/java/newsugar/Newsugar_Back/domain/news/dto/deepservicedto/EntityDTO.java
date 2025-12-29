@@ -1,4 +1,4 @@
-package newsugar.Newsugar_Back.domain.news.dto.deepserviceDTO;
+package newsugar.Newsugar_Back.domain.news.dto.deepservicedto;
 
 public record EntityDTO(
         String type,

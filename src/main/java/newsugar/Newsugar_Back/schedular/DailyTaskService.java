@@ -2,8 +2,8 @@ package newsugar.Newsugar_Back.schedular;
 
 import newsugar.Newsugar_Back.domain.ai.GeminiService;
 import newsugar.Newsugar_Back.domain.ai.clients.AiQuizClient;
-import newsugar.Newsugar_Back.domain.news.dto.deepserviceDTO.ArticleDTO;
-import newsugar.Newsugar_Back.domain.news.dto.deepserviceDTO.DeepSearchResponseDTO;
+import newsugar.Newsugar_Back.domain.news.dto.deepservicedto.ArticleDTO;
+import newsugar.Newsugar_Back.domain.news.dto.deepservicedto.DeepSearchResponseDTO;
 import newsugar.Newsugar_Back.domain.news.service.NewsService;
 import newsugar.Newsugar_Back.domain.news.service.RssNewsService;
 import newsugar.Newsugar_Back.domain.quiz.model.Question;

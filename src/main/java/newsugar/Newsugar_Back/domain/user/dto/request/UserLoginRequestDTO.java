@@ -1,4 +1,4 @@
-package newsugar.Newsugar_Back.domain.user.dto.Request;
+package newsugar.Newsugar_Back.domain.user.dto.request;
 
 public record UserLoginRequestDTO(
         String email,

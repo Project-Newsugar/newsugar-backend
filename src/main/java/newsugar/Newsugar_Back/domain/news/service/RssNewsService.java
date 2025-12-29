@@ -1,7 +1,7 @@
 package newsugar.Newsugar_Back.domain.news.service;
 
-import newsugar.Newsugar_Back.domain.news.dto.deepserviceDTO.ArticleDTO;
-import newsugar.Newsugar_Back.domain.news.dto.deepserviceDTO.DeepSearchResponseDTO;
+import newsugar.Newsugar_Back.domain.news.dto.deepservicedto.ArticleDTO;
+import newsugar.Newsugar_Back.domain.news.dto.deepservicedto.DeepSearchResponseDTO;
 import org.springframework.stereotype.Service;
 
 import javax.xml.parsers.DocumentBuilderFactory;

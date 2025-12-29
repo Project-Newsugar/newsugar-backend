@@ -1,7 +1,7 @@
 package newsugar.Newsugar_Back.domain.news.controller;
 
 import newsugar.Newsugar_Back.common.ApiResult;
-import newsugar.Newsugar_Back.domain.news.dto.deepserviceDTO.DeepSearchResponseDTO;
+import newsugar.Newsugar_Back.domain.news.dto.deepservicedto.DeepSearchResponseDTO;
 import newsugar.Newsugar_Back.domain.news.service.NewsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
