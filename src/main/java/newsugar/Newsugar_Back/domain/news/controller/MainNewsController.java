@@ -97,6 +97,22 @@ public class MainNewsController {
             return ResponseEntity.ok(ApiResult.ok(""));
         }
         String todaySummary = geminiService.summarize("오늘 주요", summaries);
+
+        // 생성된 요약을 DB에 저장하여 재접속 시에도 동일한 내용을 보여주도록 함
+        if (todaySummary != null && !todaySummary.isBlank()) {
+            if (todaySummary.length() > 3000) {
+                todaySummary = todaySummary.substring(0, 3000) + "...";
+            }
+            try {
+                Summary newSummary = Summary.builder()
+                        .summaryText(todaySummary)
+                        .build();
+                summaryRepository.save(newSummary);
+            } catch (Exception e) {
+                System.err.println("Failed to save on-demand summary: " + e.getMessage());
+            }
+        }
+
         return ResponseEntity.ok(ApiResult.ok(todaySummary));
     }
 
