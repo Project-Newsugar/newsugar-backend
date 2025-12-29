@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface QuizSubmissionRepository extends JpaRepository<QuizSubmission, Long> {
     Optional<QuizSubmission> findTopByQuiz_IdOrderByCreatedAtDesc(Long quizId);
+    Optional<QuizSubmission> findTopByQuiz_IdAndUserIdOrderByCreatedAtDesc(Long quizId, Long userId);
     List<QuizSubmission> findByUserId(Long userId);
     List<QuizSubmission> findByQuiz_Id(Long quizId);
 }

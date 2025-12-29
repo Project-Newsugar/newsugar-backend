@@ -13,7 +13,7 @@ public interface QuizService {
     SubmitResult score(Long id, List<Integer> answers);
     List<Quiz> listToday();
     List<Quiz> listByPeriod(Instant from, Instant to);
-    SubmitResult lastResult(Long quizId);
+    SubmitResult lastResult(Long quizId, Long userId);
     void ensurePlayable(Long id);
     SubmitResult resultOrThrow(Long quizId);
     Quiz generateFromSummary(Long summaryId);

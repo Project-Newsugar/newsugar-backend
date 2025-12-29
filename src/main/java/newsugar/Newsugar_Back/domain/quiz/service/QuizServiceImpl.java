@@ -177,8 +177,11 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
-    public SubmitResult lastResult(Long quizId) {
-        return quizSubmissionRepository.findTopByQuiz_IdOrderByCreatedAtDesc(quizId)
+    public SubmitResult lastResult(Long quizId, Long userId) {
+        if (userId == null) {
+            return null; // 사용자 정보가 없으면 결과도 없음
+        }
+        return quizSubmissionRepository.findTopByQuiz_IdAndUserIdOrderByCreatedAtDesc(quizId, userId)
                 .map(sub -> {
                     int total = sub.getTotal();
                     int correct = sub.getCorrect();

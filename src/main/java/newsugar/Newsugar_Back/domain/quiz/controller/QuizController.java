@@ -121,8 +121,21 @@ public class QuizController {
     }
 
     @GetMapping("/{id}/result")
-    public ResponseEntity<ApiResult<SubmitResult>> result(@PathVariable Long id) {
-        SubmitResult last = quizService.lastResult(id);
+    public ResponseEntity<ApiResult<SubmitResult>> result(
+            @PathVariable Long id,
+            @RequestHeader(value = "Authorization", required = false) String token
+    ) {
+        Long userId = null;
+        if (token != null) {
+            String actualToken = token.replace("Bearer ", "");
+            try {
+                userId = jwtService.getUserIdFromToken(actualToken);
+            } catch (Exception e) {
+                // 토큰이 유효하지 않거나 없으면 userId = null
+            }
+        }
+        
+        SubmitResult last = quizService.lastResult(id, userId);
         return ResponseEntity.ok(ApiResult.ok(last));
     }
 
