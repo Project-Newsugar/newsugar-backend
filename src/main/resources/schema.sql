@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS `question` (
 CREATE TABLE IF NOT EXISTS `question_option` (
   `question_id` bigint NOT NULL,
   `option_text` TEXT DEFAULT NULL,
+  `option_order` int DEFAULT NULL, -- 순서 보장 컬럼 추가
   KEY `FK_option_question` (`question_id`),
   CONSTRAINT `FK_option_question` FOREIGN KEY (`question_id`) REFERENCES `question` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -121,6 +122,7 @@ CREATE TABLE IF NOT EXISTS `quiz_answers` (
   `user_answer` int DEFAULT NULL,
   `is_correct` bit(1) DEFAULT NULL,
   `answered_at` datetime(6) DEFAULT NULL,
+  `answer_order` int DEFAULT NULL, -- 순서 보장 컬럼 추가
   PRIMARY KEY (`id`),
   KEY `FK_qa_submission` (`submission_id`),
   CONSTRAINT `FK_qa_submission` FOREIGN KEY (`submission_id`) REFERENCES `user_quiz` (`score_id`)
