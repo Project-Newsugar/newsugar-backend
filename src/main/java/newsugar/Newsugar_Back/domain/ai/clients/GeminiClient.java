@@ -53,6 +53,8 @@ public class GeminiClient {
                 throw e; 
             }
         }
-        throw new RuntimeException("Gemini API 호출 실패: 재시도 횟수 초과 (429 Too Many Requests)");
+        System.out.println("Gemini API 호출 실패: 재시도 횟수 초과 (429 Too Many Requests) - null 반환하고 넘어갑니다.");
+        return null;
+        // throw new RuntimeException("Gemini API 호출 실패: 재시도 횟수 초과 (429 Too Many Requests)");
     }
 }
