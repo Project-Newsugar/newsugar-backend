@@ -34,7 +34,7 @@ jobs:
       run: ./gradlew clean build -x test
 
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -42,7 +42,7 @@ jobs:
 
     - name: Login to Amazon ECR
       id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
+      uses: aws-actions/amazon-ecr-login@v2
 
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
@@ -82,5 +82,8 @@ jobs:
         git add k8s/prod/deployment.yaml
         git commit -m "Update deployment image to ${{ github.sha }} [skip ci]"
         
-        # develop 브랜치에 푸시
-        git push origin develop
+        # 원격 저장소의 최신 변경사항을 가져와서 리베이스 (충돌 방지)
+        git pull origin develop --rebase
+        
+        # develop 브랜치에 푸시 (HEAD를 develop으로)
+        git push origin HEAD:develop
