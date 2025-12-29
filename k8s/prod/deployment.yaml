@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: newsugar-backend
-          image: 061039804626.dkr.ecr.ap-northeast-2.amazonaws.com/newsugar-backend:bcd62251ff002525fd61eb13307d1a664adf8899
+          image: 061039804626.dkr.ecr.ap-northeast-2.amazonaws.com/newsugar-backend:fb4da7e3c785ac22eb30d04a9a00e937116b85d6
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
