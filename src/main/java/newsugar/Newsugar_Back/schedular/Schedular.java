@@ -44,9 +44,9 @@ public class Schedular {
                     categorySummaryService.saveInRedis(category, summary);
                     System.out.println("Category: " + category + ", Summary: " + summary);
                     
-                    // API 쿼터 제한을 피하기 위해 카테고리 처리 사이에 1분(60초) 대기
-                    // 무료 티어 한계로 인해 대기함 (사용자 요청으로 3분 -> 1분 단축)
-                    Thread.sleep(60000); 
+                    // API 쿼터 제한을 피하기 위해 카테고리 처리 사이에 30초 대기
+                    // 무료 티어 한계로 인해 대기함 (1분 -> 30초 단축)
+                    Thread.sleep(30000); 
                 } catch (Exception e) {
                     System.err.println("카테고리 요약 생성 중 오류 발생 (" + category + "): " + e.getMessage());
                     // 오류가 나도 다음 카테고리는 계속 진행 시도
