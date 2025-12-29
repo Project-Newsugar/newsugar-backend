@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: newsugar-backend
+  name: newsugar-backend-prod
   namespace: argocd
 spec:
   project: default
