@@ -35,7 +35,10 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: "prod"
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:mysql://newsugar-prod-aurora-1.c3qme6c6e7fj.ap-northeast-2.rds.amazonaws.com:3306/news_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8"
+              valueFrom:
+                secretKeyRef:
+                  name: newsugar-secrets-prod
+                  key: db-url
             - name: SPRING_JPA_DATABASE_PLATFORM
               value: "org.hibernate.dialect.MySQL8Dialect"
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
