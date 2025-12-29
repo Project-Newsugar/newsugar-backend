@@ -58,17 +58,26 @@ spec:
                   name: newsugar-secrets-prod
                   key: news-api-key
             - name: QUIZ_AI_API_KEY
-              value: "AIzaSyBs82S0035DIYzVOWvU_3-Z99u2sOEjrj0"
+              valueFrom:
+                secretKeyRef:
+                  name: newsugar-secrets-prod
+                  key: quiz-ai-api-key
             - name: REDIS_HOST
               value: "newsugar-prod-redis.2iapp0.ng.0001.apn2.cache.amazonaws.com"
             - name: REDIS_PORT
               value: "6379"
             - name: JWT_SECRET
-              value: "newsugar-prod-secret-key-very-long-and-secure-value-1234567890"
+              valueFrom:
+                secretKeyRef:
+                  name: newsugar-secrets-prod
+                  key: jwt-secret
             - name: JWT_EXPIRATION
               value: "86400000"
             - name: JWT_REFRESH_SECRET
-              value: "newsugar-prod-refresh-secret-key-very-long-and-secure-value-0987654321"
+              valueFrom:
+                secretKeyRef:
+                  name: newsugar-secrets-prod
+                  key: jwt-refresh-secret
             - name: JWT_REFRESH_EXPIRATION
               value: "604800000"
             - name: QUIZ_AI_TIMEOUT_MS
