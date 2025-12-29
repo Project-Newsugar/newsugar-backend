@@ -10,7 +10,7 @@ import newsugar.Newsugar_Back.domain.user.dto.Response.*;
 import newsugar.Newsugar_Back.domain.user.dto.Request.UserSignupRequestDTO;
 import newsugar.Newsugar_Back.domain.user.model.User;
 import newsugar.Newsugar_Back.domain.user.service.JwtService;
-import newsugar.Newsugar_Back.domain.score.Service.ScoreService;
+import newsugar.Newsugar_Back.domain.score.service.ScoreService;
 import newsugar.Newsugar_Back.domain.user.service.UserService;
 import newsugar.Newsugar_Back.domain.user.utils.JwtUtil;
 import org.springframework.http.ResponseEntity;

@@ -2,7 +2,7 @@ package newsugar.Newsugar_Back.domain.user.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import newsugar.Newsugar_Back.domain.category.Model.Category;
+import newsugar.Newsugar_Back.domain.category.model.Category;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;

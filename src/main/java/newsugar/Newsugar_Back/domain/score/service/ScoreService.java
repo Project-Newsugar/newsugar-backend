@@ -1,11 +1,11 @@
-package newsugar.Newsugar_Back.domain.score.Service;
+package newsugar.Newsugar_Back.domain.score.service;
 
 import jakarta.transaction.Transactional;
 import newsugar.Newsugar_Back.common.CustomException;
 import newsugar.Newsugar_Back.common.ErrorCode;
-import newsugar.Newsugar_Back.domain.score.Model.Score;
+import newsugar.Newsugar_Back.domain.score.model.Score;
 import newsugar.Newsugar_Back.domain.user.model.User;
-import newsugar.Newsugar_Back.domain.score.Repository.ScoreRepository;
+import newsugar.Newsugar_Back.domain.score.repository.ScoreRepository;
 import newsugar.Newsugar_Back.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 

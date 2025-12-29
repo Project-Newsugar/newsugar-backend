@@ -1,6 +1,6 @@
-package newsugar.Newsugar_Back.domain.category.Repository;
+package newsugar.Newsugar_Back.domain.category.repository;
 
-import newsugar.Newsugar_Back.domain.category.Model.Category;
+import newsugar.Newsugar_Back.domain.category.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

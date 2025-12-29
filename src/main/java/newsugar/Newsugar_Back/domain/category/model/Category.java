@@ -1,4 +1,4 @@
-package newsugar.Newsugar_Back.domain.category.Model;
+package newsugar.Newsugar_Back.domain.category.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

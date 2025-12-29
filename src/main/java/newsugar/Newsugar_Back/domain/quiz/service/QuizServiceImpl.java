@@ -10,7 +10,7 @@ import newsugar.Newsugar_Back.domain.quiz.repository.QuizRepository;
 import newsugar.Newsugar_Back.domain.quiz.repository.QuizSubmissionRepository;
 import newsugar.Newsugar_Back.domain.ai.clients.AiQuizClient;
 import newsugar.Newsugar_Back.domain.ai.GeminiService;
-import newsugar.Newsugar_Back.domain.score.Service.ScoreService;
+import newsugar.Newsugar_Back.domain.score.service.ScoreService;
 import newsugar.Newsugar_Back.domain.summary.repository.SummaryRepository;
 import newsugar.Newsugar_Back.domain.summary.model.Summary;
 import newsugar.Newsugar_Back.common.CustomException;

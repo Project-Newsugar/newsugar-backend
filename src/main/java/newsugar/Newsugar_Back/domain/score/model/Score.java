@@ -1,4 +1,4 @@
-package newsugar.Newsugar_Back.domain.score.Model;
+package newsugar.Newsugar_Back.domain.score.model;
 
 import jakarta.persistence.*;
 import lombok.*;
