@@ -36,7 +36,7 @@ public class DevQuizController {
     public ResponseEntity<ApiResult<Map<String, Object>>> validateQuiz(@PathVariable Long id) {
         Quiz quiz = quizRepository.findById(id).orElse(null);
         if (quiz == null) {
-            return ResponseEntity.ok(ApiResult.error("Quiz not found"));
+            return ResponseEntity.ok(ApiResult.error("NOT_FOUND", "Quiz not found"));
         }
 
         Map<String, Object> result = new HashMap<>();
@@ -79,7 +79,7 @@ public class DevQuizController {
     public ResponseEntity<ApiResult<Map<String, Object>>> validateScore(@PathVariable Long id, @RequestBody List<Integer> answers) {
         Quiz quiz = quizRepository.findById(id).orElse(null);
         if (quiz == null) {
-            return ResponseEntity.ok(ApiResult.error("Quiz not found"));
+            return ResponseEntity.ok(ApiResult.error("NOT_FOUND", "Quiz not found"));
         }
 
         Map<String, Object> debugLog = new HashMap<>();

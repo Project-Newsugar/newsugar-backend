@@ -24,6 +24,7 @@ public class Score {
     private Long id;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer score = 0;
 
     @Column(name = "created_at", updatable = false)
