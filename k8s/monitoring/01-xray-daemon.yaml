@@ -23,6 +23,8 @@ spec:
         app: xray-daemon
     spec:
       serviceAccountName: xray-daemon
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       containers:
         - name: xray-daemon
           image: public.ecr.aws/xray/aws-xray-daemon:latest
