@@ -50,7 +50,9 @@ dependencies {
 
 	// Monitoring & Tracing
 	implementation 'io.micrometer:micrometer-registry-cloudwatch2'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
 	implementation 'com.amazonaws:aws-xray-recorder-sdk-spring:2.18.0'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
 }
 
 tasks.named('test') {

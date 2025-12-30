@@ -5,21 +5,24 @@ AWS 관리형이랑 오픈소스 섞어서 씀. 가성비+편의성 세팅.
 
 | 구분 | 도구 | 용도 |
 |---|---|---|
-| **로그 저장** | **CloudWatch Logs** | 로그 중앙 보관 |
-| **로그 수집** | **Fluent Bit** | EKS 로그 긁어서 CloudWatch로 쏘는 역할 |
-| **트레이싱** | **AWS X-Ray** | API 요청 경로 추적 (어디서 느린지 찾기) |
-| **시각화** | **Grafana** | 대시보드 (AWS Managed 추천) |
+| **통합 모니터링** | **CloudWatch** | AWS 리소스 (ALB, EKS, S3 등) 전반적인 상태 감시 |
+| **데이터 수집** | **Prometheus** | K8s Pod 및 애플리케이션 지표 수집 |
+| **시각화** | **Grafana** | Prometheus 데이터 시각화 (대시보드) |
+| **트레이싱** | **AWS X-Ray** | 우리 앱(API) 성능 추적 (서브세그먼트로 상세 분석) |
+| **로그 수집** | **Fluent Bit** | 로그 긁어서 CloudWatch로 전송 |
 | **배포** | **ArgoCD** | GitOps 자동 배포 |
 
 ## 2. 핵심 지표 (이것만 보면 됨)
 1. **ALB (로드밸런서)**: 5XX 에러율, 응답 속도 (P95)
 2. **EKS (서버)**: 파드 개수, CPU/메모리 사용률
 3. **RDS (DB)**: CPU, 커넥션 수
+4. **Application**: API 응답 시간 (X-Ray), 힙 메모리 (Prometheus)
 
-## 3. 로그 수집 경로
-- **앱 로그**: Spring Boot -> 콘솔 출력 -> Fluent Bit -> CloudWatch
-- **접속 로그**: ALB -> S3 저장 (장애 분석용)
-- **감사 로그**: CloudTrail (누가 뭐 건드렸는지 기록)
+## 3. 데이터 흐름
+- **로그**: Spring Boot -> 콘솔 -> Fluent Bit -> CloudWatch Logs
+- **메트릭**: Spring Boot (Actuator) -> Prometheus (Scrape) -> Grafana
+- **트레이싱**: Spring Boot (X-Ray SDK) -> X-Ray Daemon (UDP) -> AWS X-Ray Console
+- **AWS 리소스**: AWS 서비스들 -> CloudWatch Metrics
 
 ## 4. 알람 정책 (최소화)
 시도 때도 없이 울리면 안 보니까 진짜 급한 것만 설정.

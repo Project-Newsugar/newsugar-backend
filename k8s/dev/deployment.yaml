@@ -17,6 +17,10 @@ spec:
       labels:
         app: newsugar-backend
         env: dev
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
     spec:
       containers:
         - name: newsugar-backend
@@ -64,3 +68,19 @@ spec:
               value: "redis-service-dev"
             - name: REDIS_PORT
               value: "6379"
+        - name: xray-daemon
+          image: public.ecr.aws/xray/aws-xray-daemon:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 2000
+              protocol: UDP
+          env:
+            - name: AWS_REGION
+              value: "ap-northeast-2"
+          resources:
+            requests:
+              cpu: "32m"
+              memory: "64Mi"
+            limits:
+              cpu: "64m"
+              memory: "128Mi"

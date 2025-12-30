@@ -17,6 +17,10 @@ spec:
       labels:
         app: newsugar-backend
         env: prod
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
     spec:
       containers:
         - name: newsugar-backend
@@ -85,3 +89,19 @@ spec:
               value: "604800000"
             - name: QUIZ_AI_TIMEOUT_MS
               value: "60000"
+        - name: xray-daemon
+          image: public.ecr.aws/xray/aws-xray-daemon:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 2000
+              protocol: UDP
+          env:
+            - name: AWS_REGION
+              value: "ap-northeast-2"
+          resources:
+            requests:
+              cpu: "32m"
+              memory: "64Mi"
+            limits:
+              cpu: "64m"
+              memory: "128Mi"
