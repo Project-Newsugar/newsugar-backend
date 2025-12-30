@@ -89,6 +89,12 @@ spec:
               value: "604800000"
             - name: QUIZ_AI_TIMEOUT_MS
               value: "60000"
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: AWS_XRAY_DAEMON_ADDRESS
+              value: "$(HOST_IP):2000"
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
