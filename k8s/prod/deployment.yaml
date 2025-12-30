@@ -89,10 +89,19 @@ spec:
               value: "604800000"
             - name: QUIZ_AI_TIMEOUT_MS
               value: "60000"
-          resources:
-            requests:
-              cpu: "32m"
-              memory: "64Mi"
-            limits:
-              cpu: "64m"
-              memory: "128Mi"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
