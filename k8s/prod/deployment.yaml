@@ -46,7 +46,7 @@ spec:
             - name: SPRING_JPA_DATABASE_PLATFORM
               value: "org.hibernate.dialect.MySQL8Dialect"
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
-              value: "update"
+              value: "none"
             - name: SPRING_SQL_INIT_MODE
               value: "always"
             - name: SPRING_DATASOURCE_USERNAME

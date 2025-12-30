@@ -23,7 +23,7 @@ rules:
     verbs: ["list", "watch"]
   - apiGroups: [""]
     resources: ["nodes/proxy", "nodes/stats", "configmaps", "events"]
-    verbs: ["create"]
+    verbs: ["create", "get", "list", "watch"]
   - apiGroups: [""]
     resources: ["configmaps"]
     resourceNames: ["cwagent-clusterleader"]
