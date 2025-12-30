@@ -50,7 +50,7 @@ dependencies {
 
 	// Monitoring & Tracing
 	implementation 'io.micrometer:micrometer-registry-cloudwatch2'
-	implementation 'com.amazonaws:aws-xray-recorder-sdk-spring:2.14.0'
+	implementation 'com.amazonaws:aws-xray-recorder-sdk-spring:2.18.0'
 }
 
 tasks.named('test') {

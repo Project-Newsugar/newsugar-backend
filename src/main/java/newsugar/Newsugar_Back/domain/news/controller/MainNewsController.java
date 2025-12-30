@@ -127,7 +127,7 @@ public class MainNewsController {
             return ResponseEntity.ok(ApiResult.ok(""));
         }
 
-        ZoneId zone = ZoneId.systemDefault();
+        ZoneId zone = ZoneId.of("Asia/Seoul");
         LocalDate today = LocalDate.now(zone);
         LocalDateTime start = today.atTime(target, 0);
         Instant from = start.atZone(zone).toInstant();
