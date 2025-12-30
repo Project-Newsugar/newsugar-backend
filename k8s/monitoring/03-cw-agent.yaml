@@ -13,8 +13,8 @@ metadata:
   name: cloudwatch-agent-role
 rules:
   - apiGroups: [""]
-    resources: ["pods", "nodes", "endpoints"]
-    verbs: ["list", "watch"]
+    resources: ["pods", "nodes", "endpoints", "services"]
+    verbs: ["list", "watch", "get"]
   - apiGroups: ["apps"]
     resources: ["replicasets"]
     verbs: ["list", "watch"]

@@ -12,6 +12,11 @@ spec:
     matchLabels:
       app: newsugar-backend
       env: prod
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
   template:
     metadata:
       labels:
