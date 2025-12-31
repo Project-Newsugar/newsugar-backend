@@ -61,9 +61,9 @@ CREATE TABLE IF NOT EXISTS `question_option` (
 CREATE TABLE IF NOT EXISTS `user` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `email` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
+  `password` varchar(255) DEFAULT NULL,
   `name` varchar(255) NOT NULL,
-  `nickname` varchar(255) NOT NULL,
+  `nickname` varchar(255) DEFAULT NULL,
   `phone` varchar(255) DEFAULT NULL,
   `created_at` datetime(6) DEFAULT NULL,
   `updated_at` datetime(6) DEFAULT NULL,
