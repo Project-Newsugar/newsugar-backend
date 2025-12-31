@@ -3,6 +3,7 @@ package newsugar.Newsugar_Back.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -12,6 +13,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+@EnableWebSecurity
 @Configuration
 public class SecurityConfig {
 
@@ -26,7 +28,8 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/health"
+                                "/health",
+                                "/api/v1/users/google"
                         ).permitAll()
                         .anyRequest().permitAll()
                 )
@@ -42,6 +45,7 @@ public class SecurityConfig {
         // 프론트엔드 주소 허용 (로컬 및 배포 환경)
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:3000",
+                "http://localhost:5173",
                 "http://k8s-default-newsugar-8783aa5362-460fe716d7996751.elb.ap-northeast-2.amazonaws.com"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
@@ -55,7 +59,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }

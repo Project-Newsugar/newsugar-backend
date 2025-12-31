@@ -29,11 +29,9 @@ public class User {
     @Column( name = "email")
     private String email;
 
-    @NotBlank
     @Column( name = "password")
     private String password;
 
-    @NotBlank
     @Column( name = "nickname")
     private String nickname;
 
@@ -47,4 +45,6 @@ public class User {
     @Column(name = "updated_at")
     @LastModifiedDate
     private Instant updatedAt;
+
+
 }

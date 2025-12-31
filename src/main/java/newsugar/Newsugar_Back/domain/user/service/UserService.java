@@ -1,11 +1,14 @@
 package newsugar.Newsugar_Back.domain.user.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import newsugar.Newsugar_Back.common.CustomException;
 import newsugar.Newsugar_Back.common.ErrorCode;
 import newsugar.Newsugar_Back.domain.category.model.Category;
 import newsugar.Newsugar_Back.domain.category.repository.CategoryRepository;
 import newsugar.Newsugar_Back.domain.score.service.ScoreService;
+import newsugar.Newsugar_Back.domain.user.dto.GoogleUserInfoDTO;
 import newsugar.Newsugar_Back.domain.user.dto.request.UserCategoryRequestDTO;
 import newsugar.Newsugar_Back.domain.user.dto.request.UserLoginRequestDTO;
 import newsugar.Newsugar_Back.domain.user.dto.request.UserModifyRequestDTO;
@@ -34,13 +37,16 @@ public class UserService {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, ScoreService scoreService, CategoryRepository categoryRepository, UserCategoryRepository userCategoryRepository, JwtUtil jwtUtil, PasswordEncoder passwordEncoder) {
+    private final GoogleService googleService;
+
+    public UserService(UserRepository userRepository, ScoreService scoreService, CategoryRepository categoryRepository, UserCategoryRepository userCategoryRepository, JwtUtil jwtUtil, PasswordEncoder passwordEncoder, GoogleService googleService) {
         this.userRepository = userRepository;
         this.scoreService = scoreService;
         this.categoryRepository = categoryRepository;
         this.userCategoryRepository = userCategoryRepository;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
+        this.googleService = googleService;
     }
 
     public UserLoginResponseDTO login(String email, String rawPassword) {
@@ -163,6 +169,27 @@ public class UserService {
                 .collect(Collectors.toList());
 
         return new UserPreferCategoryResponseDTO(user.getId(), userId, categoryIdList);
+    }
+
+    @Transactional
+    public UserLoginResponseDTO googleLogin(String accessToken) {
+
+        GoogleUserInfoDTO googleUser =
+                googleService.requestGoogleUserInfo(accessToken);
+
+        User user = userRepository.findByEmail(googleUser.email())
+                .orElseGet(() -> {
+                    User newUser = User.builder()
+                            .email(googleUser.email())
+                            .name(googleUser.name())
+                            .build();
+                    return userRepository.save(newUser);
+                });
+
+        String newAccessToken = jwtUtil.generateToken(user.getId());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getId());
+
+        return new UserLoginResponseDTO(user.getId(), newAccessToken, refreshToken);
     }
 
 }

@@ -1,7 +1,11 @@
 package newsugar.Newsugar_Back.domain.user.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import newsugar.Newsugar_Back.common.ApiResult;
+import newsugar.Newsugar_Back.domain.user.dto.GoogleUserInfoDTO;
 import newsugar.Newsugar_Back.domain.user.dto.JwtRefreshTokenDTO;
 import newsugar.Newsugar_Back.domain.user.dto.request.UserCategoryRequestDTO;
 import newsugar.Newsugar_Back.domain.user.dto.request.UserLoginRequestDTO;
@@ -9,6 +13,7 @@ import newsugar.Newsugar_Back.domain.user.dto.request.UserModifyRequestDTO;
 import newsugar.Newsugar_Back.domain.user.dto.response.*;
 import newsugar.Newsugar_Back.domain.user.dto.request.UserSignupRequestDTO;
 import newsugar.Newsugar_Back.domain.user.model.User;
+import newsugar.Newsugar_Back.domain.user.service.GoogleService;
 import newsugar.Newsugar_Back.domain.user.service.JwtService;
 import newsugar.Newsugar_Back.domain.score.service.ScoreService;
 import newsugar.Newsugar_Back.domain.user.service.UserService;
@@ -24,6 +29,7 @@ public class UserController {
     private final UserService userService;
     private final JwtService jwtService;
     private final ScoreService scoreService;
+    private final GoogleService googleService;
     private final JwtUtil jwtUtil;
 
 
@@ -155,5 +161,15 @@ public class UserController {
         UserLoginResponseDTO response = new UserLoginResponseDTO(userId, newAccessToken, request.refreshToken());
 
         return ResponseEntity.ok(ApiResult.ok(response));
+    }
+
+    @PostMapping("/google/login")
+    public ResponseEntity<ApiResult<GoogleUserInfoDTO>> googleLogin(
+            @RequestBody String accessToken
+    ) {
+        GoogleUserInfoDTO googleUser =
+                googleService.requestGoogleUserInfo(accessToken);
+
+        return ResponseEntity.ok(ApiResult.ok(googleUser));
     }
 }
