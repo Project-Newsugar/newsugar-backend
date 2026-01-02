@@ -21,6 +21,8 @@ import newsugar.Newsugar_Back.domain.user.utils.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
@@ -165,8 +167,10 @@ public class UserController {
 
     @PostMapping("/google/login")
     public ResponseEntity<ApiResult<GoogleUserInfoDTO>> googleLogin(
-            @RequestBody String accessToken
+            @RequestBody Map<String, String> request
     ) {
+        String accessToken = request.get("accessToken");
+
         GoogleUserInfoDTO googleUser =
                 googleService.requestGoogleUserInfo(accessToken);
 
