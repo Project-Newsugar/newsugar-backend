@@ -71,10 +71,13 @@ public class NewsService {
         // 검색 정확도를 위해 최근 1년 데이터로 제한
         LocalDate dateFrom = today.minusYears(1);
 
-        // 검색어에 공백이 있으면 따옴표로 감싸서 정확한 Phrase 검색 유도
+        // 검색어 전처리: 정확도 향상을 위해 모든 검색어를 따옴표로 감쌈 (이미 감싸져 있지 않다면)
+        // 이렇게 해야 DeepSearch가 형태소 분석을 하지 않고 정확한 키워드 매칭을 수행함
         String searchKeyword = keyword;
-        if (keyword != null && keyword.contains(" ") && !keyword.startsWith("\"")) {
-            searchKeyword = "\"" + keyword + "\"";
+        if (keyword != null && !keyword.isBlank()) {
+             if (!keyword.startsWith("\"") && !keyword.endsWith("\"")) {
+                 searchKeyword = "\"" + keyword + "\"";
+             }
         }
 
         URI uri = UriComponentsBuilder
@@ -93,6 +96,31 @@ public class NewsService {
         System.out.println("DeepSearch URL = " + uri);
 
         // API 호출
-        return restTemplate.getForObject(uri, DeepSearchResponseDTO.class);
+        DeepSearchResponseDTO response = restTemplate.getForObject(uri, DeepSearchResponseDTO.class);
+
+        // 결과 중복 제거 (API의 uniquify가 완벽하지 않은 경우 대비)
+        if (response != null && response.data() != null) {
+            List<ArticleDTO> distinctArticles = response.data().stream()
+                .filter(distinctByKey(article -> article.title() + "_" + article.publisher()))
+                .collect(Collectors.toList());
+            
+            // 레코드 재생성 (데이터만 교체)
+            return new DeepSearchResponseDTO(
+                response.detail(),
+                response.total_items(), // 전체 개수는 정확하지 않을 수 있지만 API 응답 유지
+                response.total_pages(),
+                response.page(),
+                response.page_size(),
+                distinctArticles
+            );
+        }
+
+        return response;
+    }
+
+    // 중복 제거를 위한 유틸리티 메서드
+    private static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
+        java.util.Set<Object> seen = java.util.concurrent.ConcurrentHashMap.newKeySet();
+        return t -> seen.add(keyExtractor.apply(t));
     }
 }
