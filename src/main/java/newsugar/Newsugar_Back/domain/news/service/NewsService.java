@@ -39,7 +39,9 @@ public class NewsService {
                 UriComponentsBuilder.fromHttpUrl("https://api-v2.deepsearch.com/v1/articles")
                         .queryParam("api_key", apiKey)
                         .queryParam("page", currentPage)
-                        .queryParam("page_size", currentPageSize);
+                        .queryParam("page_size", currentPageSize)
+                        .queryParam("sort", "desc")
+                        .queryParam("uniquify", "true");
 
         // 복수 카테고리 처리
         if (categories != null && !categories.isEmpty()) {
@@ -51,7 +53,9 @@ public class NewsService {
                     .fromHttpUrl("https://api-v2.deepsearch.com/v1/articles/" + categoryPath)
                     .queryParam("api_key", apiKey)
                     .queryParam("page", currentPage)
-                    .queryParam("page_size", currentPageSize);
+                    .queryParam("page_size", currentPageSize)
+                    .queryParam("sort", "desc")
+                    .queryParam("uniquify", "true");
         }
 
         String url = builder.toUriString();
@@ -61,11 +65,21 @@ public class NewsService {
     public DeepSearchResponseDTO getNewsByKeyword(String keyword, Integer page, Integer page_size){
 
         LocalDate today = LocalDate.now();
+        // 검색 정확도를 위해 최근 1년 데이터로 제한
+        LocalDate dateFrom = today.minusYears(1);
+
+        // 검색어에 공백이 있으면 따옴표로 감싸서 정확한 Phrase 검색 유도
+        String searchKeyword = keyword;
+        if (keyword != null && keyword.contains(" ") && !keyword.startsWith("\"")) {
+            searchKeyword = "\"" + keyword + "\"";
+        }
 
         String url = UriComponentsBuilder
                 .fromHttpUrl("https://api-v2.deepsearch.com/v1/articles")
-                .queryParam("keyword", keyword)
+                .queryParam("keyword", searchKeyword)
                 .queryParam("sort", "desc")
+                .queryParam("uniquify", "true")
+                .queryParam("date_from", dateFrom.toString())
                 .queryParam("page", page)
                 .queryParam("page_size", page_size)
                 .queryParam("api_key", apiKey)
