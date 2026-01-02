@@ -1,29 +1,32 @@
 package newsugar.Newsugar_Back.domain.user.service;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.http.javanet.NetHttpTransport;
 import io.github.cdimascio.dotenv.Dotenv;
 import newsugar.Newsugar_Back.common.CustomException;
 import newsugar.Newsugar_Back.common.ErrorCode;
 import newsugar.Newsugar_Back.domain.user.dto.GoogleUserInfoDTO;
+import newsugar.Newsugar_Back.domain.user.dto.response.UserLoginResponseDTO;
+import newsugar.Newsugar_Back.domain.user.model.User;
+import newsugar.Newsugar_Back.domain.user.repository.UserRepository;
+import newsugar.Newsugar_Back.domain.user.utils.JwtUtil;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
 import java.util.Map;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 
 
 @Service
 public class GoogleService {
+    private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
+
     private final String GOOGLE_CLIENT_ID;
     private final String GOOGLE_CLIENT_SECRET;
 
-    public GoogleService(){
+    public GoogleService(UserRepository userRepository, JwtUtil jwtUtil){
+        this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
 
         Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
 
@@ -34,6 +37,29 @@ public class GoogleService {
         String googleSecret = System.getenv("GOOGLE_CLIENT_SECRET");
         if(googleSecret == null) googleSecret = dotenv.get("GOOGLE_CLIENT_SECRET");
         this.GOOGLE_CLIENT_SECRET = googleSecret;
+    }
+
+    public UserLoginResponseDTO googleLogin(String accessToken) {
+
+        GoogleUserInfoDTO googleUser = requestGoogleUserInfo(accessToken);
+
+        User user = userRepository.findByEmail(googleUser.email())
+                .orElseGet(() -> {
+                    User newUser = User.builder()
+                            .email(googleUser.email())
+                            .name(googleUser.name())
+                            .build();
+                    return userRepository.save(newUser);
+                });
+
+        String accessTokenJwt = jwtUtil.generateToken(user.getId());
+        String refreshTokenJwt = jwtUtil.generateRefreshToken(user.getId());
+
+        return new UserLoginResponseDTO(
+                user.getId(),
+                accessTokenJwt,
+                refreshTokenJwt
+        );
     }
     public GoogleUserInfoDTO requestGoogleUserInfo(String accessToken) {
 

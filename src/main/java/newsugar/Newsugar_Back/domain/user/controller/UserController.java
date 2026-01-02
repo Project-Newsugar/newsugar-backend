@@ -166,14 +166,14 @@ public class UserController {
     }
 
     @PostMapping("/google/login")
-    public ResponseEntity<ApiResult<GoogleUserInfoDTO>> googleLogin(
+    public ResponseEntity<ApiResult<UserLoginResponseDTO>> googleLogin(
             @RequestBody Map<String, String> request
     ) {
         String accessToken = request.get("accessToken");
 
-        GoogleUserInfoDTO googleUser =
-                googleService.requestGoogleUserInfo(accessToken);
+        UserLoginResponseDTO response =
+                googleService.googleLogin(accessToken);
 
-        return ResponseEntity.ok(ApiResult.ok(googleUser));
+        return ResponseEntity.ok(ApiResult.ok(response));
     }
 }
