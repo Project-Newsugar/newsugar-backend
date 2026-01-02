@@ -78,6 +78,10 @@ public class NewsService {
              if (!keyword.startsWith("\"") && !keyword.endsWith("\"")) {
                  searchKeyword = "\"" + keyword + "\"";
              }
+             // 제목 검색으로 제한하여 정확도 향상 (예: 본문에만 나오는 관련 없는 기사 제외)
+             if (!searchKeyword.startsWith("title:")) {
+                 searchKeyword = "title:" + searchKeyword;
+             }
         }
 
         URI uri = UriComponentsBuilder
