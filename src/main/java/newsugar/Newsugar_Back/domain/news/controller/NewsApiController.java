@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -27,8 +28,10 @@ public class NewsApiController {
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer page_size
     ) {
+        // 검색 범위를 최근 1년으로 제한하여 너무 오래된 뉴스가 나오지 않도록 함
+        LocalDate dateFrom = LocalDate.now().minusYears(1);
         DeepSearchResponseDTO response =
-                newsApiService.getNewsByCategory(category, page, page_size);
+                newsApiService.getNewsByCategory(category, dateFrom, page, page_size);
 
         return ResponseEntity.ok(ApiResult.ok(response));
     }

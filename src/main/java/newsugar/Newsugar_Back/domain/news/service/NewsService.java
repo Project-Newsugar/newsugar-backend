@@ -32,6 +32,7 @@ public class NewsService {
 
     public DeepSearchResponseDTO getNewsByCategory(
             List<String> categories,
+            LocalDate dateFrom,
             Integer page,
             Integer page_size
     ) {
@@ -45,6 +46,10 @@ public class NewsService {
                         .queryParam("page_size", currentPageSize)
                         .queryParam("sort", "desc")
                         .queryParam("uniquify", "true");
+        
+        if (dateFrom != null) {
+            builder.queryParam("date_from", dateFrom.toString());
+        }
 
         // 복수 카테고리 처리
         if (categories != null && !categories.isEmpty()) {
@@ -59,6 +64,10 @@ public class NewsService {
                     .queryParam("page_size", currentPageSize)
                     .queryParam("sort", "desc")
                     .queryParam("uniquify", "true");
+            
+            if (dateFrom != null) {
+                builder.queryParam("date_from", dateFrom.toString());
+            }
         }
 
         String url = builder.toUriString();

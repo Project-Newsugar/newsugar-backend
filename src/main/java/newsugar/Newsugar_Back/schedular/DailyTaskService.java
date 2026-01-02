@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -68,7 +69,7 @@ public class DailyTaskService {
         DeepSearchResponseDTO news;
         try {
             // 뉴스 조회 시 정렬 파라미터(sort=date) 추가는 NewsService 내부 로직 개선 필요
-            news = newsService.getNewsByCategory(null, 1, 5);
+            news = newsService.getNewsByCategory(null, LocalDate.now().minusDays(1), 1, 5);
             boolean empty = (news == null) || (news.data() == null) || news.data().isEmpty();
             if (empty) {
                 news = rssNewsService.getTopHeadlines(1, 5);

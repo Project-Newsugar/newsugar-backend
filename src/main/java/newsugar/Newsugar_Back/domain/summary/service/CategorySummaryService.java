@@ -8,6 +8,7 @@ import newsugar.Newsugar_Back.domain.news.dto.deepservicedto.DeepSearchResponseD
 import newsugar.Newsugar_Back.domain.news.service.NewsService;
 import newsugar.Newsugar_Back.domain.summary.repository.CategorySummaryRedis;
 import org.springframework.stereotype.Service;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,9 +28,10 @@ public class CategorySummaryService {
     }
 
     public String generateCategorySummary(String category) {
-        // DeepSearch API에서 뉴스 5개 가져오기
+        // DeepSearch API에서 뉴스 5개 가져오기 (최근 3일 데이터로 제한)
         DeepSearchResponseDTO response = newsService.getNewsByCategory(
                 List.of(category), // 단일 카테고리
+                LocalDate.now().minusDays(3), // 최근 3일
                 1,                // 첫 페이지
                 5                 // 5개만
         );
