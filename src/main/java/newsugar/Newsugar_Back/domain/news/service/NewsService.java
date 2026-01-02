@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import newsugar.Newsugar_Back.domain.news.dto.deepservicedto.ArticleDTO;
+
 @Service
 public class NewsService {
 
