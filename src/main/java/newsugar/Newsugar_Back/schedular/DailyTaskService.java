@@ -69,7 +69,8 @@ public class DailyTaskService {
         DeepSearchResponseDTO news;
         try {
             // 뉴스 조회 시 정렬 파라미터(sort=date) 추가는 NewsService 내부 로직 개선 필요
-            news = newsService.getNewsByCategory(null, LocalDate.now().minusDays(1), 1, 5);
+            // TimeZone 명시하여 KST 기준 날짜 사용
+            news = newsService.getNewsByCategory(null, LocalDate.now(java.time.ZoneId.of("Asia/Seoul")).minusDays(1), 1, 5);
             boolean empty = (news == null) || (news.data() == null) || news.data().isEmpty();
             if (empty) {
                 news = rssNewsService.getTopHeadlines(1, 5);

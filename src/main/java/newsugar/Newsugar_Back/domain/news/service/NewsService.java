@@ -44,7 +44,7 @@ public class NewsService {
                         .queryParam("api_key", apiKey)
                         .queryParam("page", currentPage)
                         .queryParam("page_size", currentPageSize)
-                        .queryParam("sort", "desc")
+                        .queryParam("sort", "date")
                         .queryParam("uniquify", "true");
         
         if (dateFrom != null) {
@@ -62,7 +62,7 @@ public class NewsService {
                     .queryParam("api_key", apiKey)
                     .queryParam("page", currentPage)
                     .queryParam("page_size", currentPageSize)
-                    .queryParam("sort", "desc")
+                    .queryParam("sort", "date")
                     .queryParam("uniquify", "true");
             
             if (dateFrom != null) {
@@ -76,7 +76,7 @@ public class NewsService {
 
     public DeepSearchResponseDTO getNewsByKeyword(String keyword, Integer page, Integer page_size){
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(java.time.ZoneId.of("Asia/Seoul"));
         // 검색 정확도를 위해 최근 1년 데이터로 제한
         LocalDate dateFrom = today.minusYears(1);
 
@@ -96,7 +96,7 @@ public class NewsService {
         URI uri = UriComponentsBuilder
                 .fromHttpUrl("https://api-v2.deepsearch.com/v1/articles")
                 .queryParam("keyword", searchKeyword)
-                .queryParam("sort", "desc")
+                .queryParam("sort", "date")
                 .queryParam("uniquify", "true")
                 .queryParam("date_from", dateFrom.toString())
                 .queryParam("page", page)

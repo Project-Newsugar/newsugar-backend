@@ -31,7 +31,7 @@ public class CategorySummaryService {
         // DeepSearch API에서 뉴스 5개 가져오기 (최근 3일 데이터로 제한)
         DeepSearchResponseDTO response = newsService.getNewsByCategory(
                 List.of(category), // 단일 카테고리
-                LocalDate.now().minusDays(3), // 최근 3일
+                LocalDate.now(java.time.ZoneId.of("Asia/Seoul")).minusDays(3), // 최근 3일
                 1,                // 첫 페이지
                 5                 // 5개만
         );
