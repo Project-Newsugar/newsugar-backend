@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -74,7 +75,7 @@ public class NewsService {
             searchKeyword = "\"" + keyword + "\"";
         }
 
-        String url = UriComponentsBuilder
+        URI uri = UriComponentsBuilder
                 .fromHttpUrl("https://api-v2.deepsearch.com/v1/articles")
                 .queryParam("keyword", searchKeyword)
                 .queryParam("sort", "desc")
@@ -85,11 +86,11 @@ public class NewsService {
                 .queryParam("api_key", apiKey)
                 .build()
                 .encode(StandardCharsets.UTF_8)
-                .toUriString();
+                .toUri();
 
-        System.out.println("DeepSearch URL = " + url);
+        System.out.println("DeepSearch URL = " + uri);
 
         // API 호출
-        return restTemplate.getForObject(url, DeepSearchResponseDTO.class);
+        return restTemplate.getForObject(uri, DeepSearchResponseDTO.class);
     }
 }
