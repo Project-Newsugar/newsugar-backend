@@ -34,8 +34,6 @@ public class CategorySummaryService {
         DeepSearchResponseDTO response =
                 newsService.getNewsByCategory(List.of(category), dateFrom, 1, 5);
 
-
-
         // 뉴스 summary 추출
         List<String> summaries = response.data()
                 .stream()
