@@ -186,6 +186,9 @@ public class UserService {
                     return userRepository.save(newUser);
                 });
 
+        // 점수 초기화
+        scoreService.createScore(user.getId());
+
         String newAccessToken = jwtUtil.generateToken(user.getId());
         String refreshToken = jwtUtil.generateRefreshToken(user.getId());
 
