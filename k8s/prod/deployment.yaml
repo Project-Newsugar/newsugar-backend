@@ -12,15 +12,24 @@ spec:
     matchLabels:
       app: newsugar-backend
       env: prod
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
   template:
     metadata:
       labels:
         app: newsugar-backend
         env: prod
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
     spec:
       containers:
         - name: newsugar-backend
-          image: 061039804626.dkr.ecr.ap-northeast-2.amazonaws.com/newsugar-backend:ecc6fa3275e207985a0388fe6b6c25a0c93c57e3
+          image: 061039804626.dkr.ecr.ap-northeast-2.amazonaws.com/newsugar-backend:550a9b681a29d692517cce06bdd7f4f6f8c43731
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -85,3 +94,25 @@ spec:
               value: "604800000"
             - name: QUIZ_AI_TIMEOUT_MS
               value: "60000"
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: AWS_XRAY_DAEMON_ADDRESS
+              value: "$(HOST_IP):2000"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 120
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 5

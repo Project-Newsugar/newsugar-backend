@@ -50,7 +50,8 @@ public class MainNewsController {
     ) {
         DeepSearchResponseDTO response;
         try {
-            response = newsService.getNewsByCategory(null, page, page_size);
+            // 오늘자 요약이므로 최근 1일치만 조회
+            response = newsService.getNewsByCategory(null, LocalDate.now().minusDays(1), page, page_size);
             boolean empty = (response == null) || (response.data() == null) || response.data().isEmpty();
             if (empty) {
                 response = rssNewsService.getTopHeadlines(page, page_size);
@@ -78,7 +79,7 @@ public class MainNewsController {
         }
         DeepSearchResponseDTO response;
         try {
-            response = newsService.getNewsByCategory(null, page, page_size);
+            response = newsService.getNewsByCategory(null, LocalDate.now().minusDays(1), page, page_size);
             boolean empty = (response == null) || (response.data() == null) || response.data().isEmpty();
             if (empty) {
                 response = rssNewsService.getTopHeadlines(page, page_size);
@@ -127,7 +128,7 @@ public class MainNewsController {
             return ResponseEntity.ok(ApiResult.ok(""));
         }
 
-        ZoneId zone = ZoneId.systemDefault();
+        ZoneId zone = ZoneId.of("Asia/Seoul");
         LocalDate today = LocalDate.now(zone);
         LocalDateTime start = today.atTime(target, 0);
         Instant from = start.atZone(zone).toInstant();

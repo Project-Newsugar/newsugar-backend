@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: newsugar-monitoring
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Project-Newsugar/newsugar-backend.git
+    targetRevision: develop
+    path: k8s/monitoring
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: amazon-cloudwatch
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
