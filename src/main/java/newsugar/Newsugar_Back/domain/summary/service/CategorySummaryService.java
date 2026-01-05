@@ -3,6 +3,7 @@ package newsugar.Newsugar_Back.domain.summary.service;
 import newsugar.Newsugar_Back.common.CustomException;
 import newsugar.Newsugar_Back.common.ErrorCode;
 import newsugar.Newsugar_Back.domain.ai.GeminiService;
+import newsugar.Newsugar_Back.domain.news.controller.NewsApiController;
 import newsugar.Newsugar_Back.domain.news.dto.deepservicedto.ArticleDTO;
 import newsugar.Newsugar_Back.domain.news.dto.deepservicedto.DeepSearchResponseDTO;
 import newsugar.Newsugar_Back.domain.news.service.NewsService;
@@ -29,12 +30,11 @@ public class CategorySummaryService {
 
     public String generateCategorySummary(String category) {
         // DeepSearch API에서 뉴스 5개 가져오기 (최근 3일 데이터로 제한)
-        DeepSearchResponseDTO response = newsService.getNewsByCategory(
-                List.of(category), // 단일 카테고리
-                LocalDate.now(java.time.ZoneId.of("Asia/Seoul")).minusDays(3), // 최근 3일
-                1,                // 첫 페이지
-                5                 // 5개만
-        );
+        LocalDate dateFrom = LocalDate.now();
+        DeepSearchResponseDTO response =
+                newsService.getNewsByCategory(List.of(category), dateFrom, 1, 5);
+
+
 
         // 뉴스 summary 추출
         List<String> summaries = response.data()
