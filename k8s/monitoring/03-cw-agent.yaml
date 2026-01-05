@@ -56,7 +56,7 @@ data:
       "logs": {
         "metrics_collected": {
           "kubernetes": {
-            "cluster_name": "newsugar-cluster",
+            "cluster_name": "newsugar-prod-eks",
             "metrics_collection_interval": 60
           }
         },

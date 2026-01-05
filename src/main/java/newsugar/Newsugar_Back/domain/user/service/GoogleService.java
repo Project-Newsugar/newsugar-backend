@@ -59,7 +59,6 @@ public class GoogleService {
                     return savedUser;
                 });
 
-
         String accessTokenJwt = jwtUtil.generateToken(user.getId());
         String refreshTokenJwt = jwtUtil.generateRefreshToken(user.getId());
 
