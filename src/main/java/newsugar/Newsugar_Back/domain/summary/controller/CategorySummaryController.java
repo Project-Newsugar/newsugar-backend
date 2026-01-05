@@ -29,7 +29,7 @@ public class CategorySummaryController {
 
     @GetMapping("/category-summary/{category}")
     public ResponseEntity<ApiResult<String>> getCategorySummary(@PathVariable String category) {
-        String redisKey = "category_summary:" + category;
+        String redisKey = "category_summary:v2:" + category;
         String summary = categorySummaryService.getSummary(redisKey);
         return ResponseEntity.ok(ApiResult.ok(summary));
     }

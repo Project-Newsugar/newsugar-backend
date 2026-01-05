@@ -34,17 +34,27 @@ public class CategorySummaryService {
         DeepSearchResponseDTO response =
                 newsService.getNewsByCategory(List.of(category), dateFrom, 1, 5);
 
+        if (response == null || response.data() == null || response.data().isEmpty()) {
+            return "최근 24시간 내 해당 카테고리의 주요 뉴스가 충분하지 않아 요약을 생성할 수 없습니다.";
+        }
+
         // 뉴스 summary 추출
         List<String> summaries = response.data()
                 .stream()
                 .map(ArticleDTO::summary)
                 .toList();
+        
+        if (summaries.isEmpty()) {
+             return "최근 24시간 내 해당 카테고리의 주요 뉴스가 충분하지 않아 요약을 생성할 수 없습니다.";
+        }
 
         // Gemmini로 요약
         String categorySummary = geminiService.summarize(category,summaries);
 
-        // 캐시에 저장
+        // 캐시에 저장 (메모리 캐시 및 Redis 캐시 동시 갱신 권장)
         cache.put(category, categorySummary);
+        saveInRedis(category, categorySummary); // Redis에도 즉시 저장하여 일관성 유지
+        
         return categorySummary;
     }
 
@@ -59,7 +69,7 @@ public class CategorySummaryService {
     }
 
     public void saveInRedis(String category, String summary) {
-        String key = "category_summary:" + category;
+        String key = "category_summary:v2:" + category;
         categorySummaryRedis.saveSummary(key, summary);
     }
 

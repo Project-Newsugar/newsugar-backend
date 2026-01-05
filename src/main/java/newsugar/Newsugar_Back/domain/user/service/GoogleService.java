@@ -3,6 +3,7 @@ package newsugar.Newsugar_Back.domain.user.service;
 import io.github.cdimascio.dotenv.Dotenv;
 import newsugar.Newsugar_Back.common.CustomException;
 import newsugar.Newsugar_Back.common.ErrorCode;
+import newsugar.Newsugar_Back.domain.score.service.ScoreService;
 import newsugar.Newsugar_Back.domain.user.dto.GoogleUserInfoDTO;
 import newsugar.Newsugar_Back.domain.user.dto.response.UserLoginResponseDTO;
 import newsugar.Newsugar_Back.domain.user.model.User;
@@ -19,14 +20,16 @@ import java.util.Map;
 @Service
 public class GoogleService {
     private final UserRepository userRepository;
+    private final ScoreService scoreService;
     private final JwtUtil jwtUtil;
 
     private final String GOOGLE_CLIENT_ID;
     private final String GOOGLE_CLIENT_SECRET;
 
-    public GoogleService(UserRepository userRepository, JwtUtil jwtUtil){
+    public GoogleService(UserRepository userRepository, JwtUtil jwtUtil, ScoreService scoreService){
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
+        this.scoreService = scoreService;
 
         Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
 
@@ -49,7 +52,11 @@ public class GoogleService {
                             .email(googleUser.email())
                             .name(googleUser.name())
                             .build();
-                    return userRepository.save(newUser);
+                    User savedUser = userRepository.save(newUser);
+
+                    scoreService.createScore(savedUser.getId());
+
+                    return savedUser;
                 });
 
         String accessTokenJwt = jwtUtil.generateToken(user.getId());

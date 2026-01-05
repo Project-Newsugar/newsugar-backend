@@ -50,8 +50,8 @@ public class MainNewsController {
     ) {
         DeepSearchResponseDTO response;
         try {
-            // 오늘자 요약이므로 최근 1일치만 조회
-            response = newsService.getNewsByCategory(null, LocalDate.now().minusDays(1), page, page_size);
+            // 오늘자 요약이므로 최근 1일치만 조회 (KST 기준)
+            response = newsService.getNewsByCategory(null, LocalDate.now(ZoneId.of("Asia/Seoul")).minusDays(1), page, page_size);
             boolean empty = (response == null) || (response.data() == null) || response.data().isEmpty();
             if (empty) {
                 response = rssNewsService.getTopHeadlines(page, page_size);
@@ -72,14 +72,19 @@ public class MainNewsController {
                 .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
                 .findFirst();
         if (latest.isPresent()) {
-            String txt = latest.get().getSummaryText();
-            if (txt != null && !txt.isBlank()) {
-                return ResponseEntity.ok(ApiResult.ok(txt));
+            if (latest.get().getCreatedAt().isBefore(Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS))) {
+                // 오래된 데이터는 무시하고 아래 실시간 생성 로직으로 진행
+            } else {
+                String txt = latest.get().getSummaryText();
+                if (txt != null && !txt.isBlank()) {
+                    return ResponseEntity.ok(ApiResult.ok(txt));
+                }
             }
         }
         DeepSearchResponseDTO response;
         try {
-            response = newsService.getNewsByCategory(null, LocalDate.now().minusDays(1), page, page_size);
+            // KST 기준 최근 1일
+            response = newsService.getNewsByCategory(null, LocalDate.now(ZoneId.of("Asia/Seoul")).minusDays(1), page, page_size);
             boolean empty = (response == null) || (response.data() == null) || response.data().isEmpty();
             if (empty) {
                 response = rssNewsService.getTopHeadlines(page, page_size);
@@ -117,16 +122,20 @@ public class MainNewsController {
         if (target == 24) target = 0;
         if (target != 0 && target != 6 && target != 12 && target != 18) {
             java.util.Optional<Summary> latest = summaryRepository.findAll().stream()
-                    .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
-                    .findFirst();
-            if (latest.isPresent()) {
-                String txt = latest.get().getSummaryText();
-                if (txt != null && !txt.isBlank()) {
-                    return ResponseEntity.ok(ApiResult.ok(txt));
-                }
+                .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
+                .findFirst();
+        if (latest.isPresent()) {
+            // 24시간 지난 오래된 요약은 반환하지 않음
+            if (latest.get().getCreatedAt().isBefore(Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS))) {
+                 return ResponseEntity.ok(ApiResult.ok("최신 뉴스 요약을 생성 중입니다. 잠시만 기다려주세요."));
             }
-            return ResponseEntity.ok(ApiResult.ok(""));
+            String txt = latest.get().getSummaryText();
+            if (txt != null && !txt.isBlank()) {
+                return ResponseEntity.ok(ApiResult.ok(txt));
+            }
         }
+        return ResponseEntity.ok(ApiResult.ok(""));
+    }
 
         ZoneId zone = ZoneId.of("Asia/Seoul");
         LocalDate today = LocalDate.now(zone);
