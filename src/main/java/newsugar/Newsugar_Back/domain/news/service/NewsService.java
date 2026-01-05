@@ -38,6 +38,10 @@ public class NewsService {
     ) {
         int currentPage = (page != null) ? page : 1;
         int currentPageSize = (page_size != null) ? page_size : 10;
+        
+        // 날짜 필터링 범위 설정: 시작일(dateFrom)부터 종료일(오늘)까지
+        // date_to 파라미터가 없으면 API가 과거 데이터를 포함할 수 있으므로 명시적으로 지정
+        LocalDate dateTo = LocalDate.now(java.time.ZoneId.of("Asia/Seoul"));
 
         UriComponentsBuilder builder =
                 UriComponentsBuilder.fromHttpUrl("https://api-v2.deepsearch.com/v1/articles")
@@ -45,7 +49,8 @@ public class NewsService {
                         .queryParam("page", currentPage)
                         .queryParam("page_size", currentPageSize)
                         .queryParam("sort", "date")
-                        .queryParam("uniquify", "true");
+                        .queryParam("uniquify", "true")
+                        .queryParam("date_to", dateTo.toString());
         
         if (dateFrom != null) {
             builder.queryParam("date_from", dateFrom.toString());
@@ -63,7 +68,8 @@ public class NewsService {
                     .queryParam("page", currentPage)
                     .queryParam("page_size", currentPageSize)
                     .queryParam("sort", "date")
-                    .queryParam("uniquify", "true");
+                    .queryParam("uniquify", "true")
+                    .queryParam("date_to", dateTo.toString());
             
             if (dateFrom != null) {
                 builder.queryParam("date_from", dateFrom.toString());
