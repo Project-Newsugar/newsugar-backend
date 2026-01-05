@@ -61,7 +61,7 @@ public class CategorySummaryService {
     }
 
     public void saveInRedis(String category, String summary) {
-        String key = "category_summary:" + category;
+        String key = "category_summary:v2:" + category;
         categorySummaryRedis.saveSummary(key, summary);
     }
 
