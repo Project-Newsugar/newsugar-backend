@@ -98,8 +98,9 @@ public class NewsService {
     public DeepSearchResponseDTO getNewsByKeyword(String keyword, Integer page, Integer page_size){
 
         LocalDate today = LocalDate.now(java.time.ZoneId.of("Asia/Seoul"));
-        // 검색 정확도를 위해 최근 1개월 데이터로 제한 (기존 1년 -> 1개월)
-        LocalDate dateFrom = today.minusMonths(1);
+        // 검색 정확도를 위해 최근 1일(어제~오늘) 데이터로 제한 (기존 1개월 -> 1일)
+        // 사용자가 과거 뉴스가 나오는 것을 극도로 꺼려하므로 범위를 매우 좁게 설정
+        LocalDate dateFrom = today.minusDays(1);
         LocalDate dateTo = today;
 
         // 검색어 전처리: 정확도 향상을 위해 모든 검색어를 따옴표로 감쌈 (이미 감싸져 있지 않다면)

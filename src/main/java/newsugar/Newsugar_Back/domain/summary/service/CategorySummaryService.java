@@ -28,25 +28,35 @@ public class CategorySummaryService {
     }
 
     public String generateCategorySummary(String category) {
-        // DeepSearch API에서 뉴스 5개 가져오기 (최근 3일 데이터로 제한)
+        // DeepSearch API에서 뉴스 5개 가져오기 (최근 1일 데이터로 제한하여 최신성 보장)
         DeepSearchResponseDTO response = newsService.getNewsByCategory(
                 List.of(category), // 단일 카테고리
-                LocalDate.now(java.time.ZoneId.of("Asia/Seoul")).minusDays(3), // 최근 3일
+                LocalDate.now(java.time.ZoneId.of("Asia/Seoul")).minusDays(1), // 최근 1일(어제~오늘)
                 1,                // 첫 페이지
                 5                 // 5개만
         );
+
+        if (response == null || response.data() == null || response.data().isEmpty()) {
+            return "최근 24시간 내 해당 카테고리의 주요 뉴스가 충분하지 않아 요약을 생성할 수 없습니다.";
+        }
 
         // 뉴스 summary 추출
         List<String> summaries = response.data()
                 .stream()
                 .map(ArticleDTO::summary)
                 .toList();
+        
+        if (summaries.isEmpty()) {
+             return "최근 24시간 내 해당 카테고리의 주요 뉴스가 충분하지 않아 요약을 생성할 수 없습니다.";
+        }
 
         // Gemmini로 요약
         String categorySummary = geminiService.summarize(category,summaries);
 
-        // 캐시에 저장
+        // 캐시에 저장 (메모리 캐시 및 Redis 캐시 동시 갱신 권장)
         cache.put(category, categorySummary);
+        saveInRedis(category, categorySummary); // Redis에도 즉시 저장하여 일관성 유지
+        
         return categorySummary;
     }
 

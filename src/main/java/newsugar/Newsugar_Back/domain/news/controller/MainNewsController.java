@@ -50,8 +50,8 @@ public class MainNewsController {
     ) {
         DeepSearchResponseDTO response;
         try {
-            // 오늘자 요약이므로 최근 1일치만 조회
-            response = newsService.getNewsByCategory(null, LocalDate.now().minusDays(1), page, page_size);
+            // 오늘자 요약이므로 최근 1일치만 조회 (KST 기준)
+            response = newsService.getNewsByCategory(null, LocalDate.now(ZoneId.of("Asia/Seoul")).minusDays(1), page, page_size);
             boolean empty = (response == null) || (response.data() == null) || response.data().isEmpty();
             if (empty) {
                 response = rssNewsService.getTopHeadlines(page, page_size);
@@ -83,7 +83,8 @@ public class MainNewsController {
         }
         DeepSearchResponseDTO response;
         try {
-            response = newsService.getNewsByCategory(null, LocalDate.now().minusDays(1), page, page_size);
+            // KST 기준 최근 1일
+            response = newsService.getNewsByCategory(null, LocalDate.now(ZoneId.of("Asia/Seoul")).minusDays(1), page, page_size);
             boolean empty = (response == null) || (response.data() == null) || response.data().isEmpty();
             if (empty) {
                 response = rssNewsService.getTopHeadlines(page, page_size);
