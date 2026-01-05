@@ -126,7 +126,7 @@ public class MainNewsController {
                 .findFirst();
         if (latest.isPresent()) {
             // 24시간 지난 오래된 요약은 반환하지 않음
-            if (latest.get().getCreatedAt().isBefore(Instant.now().minus(java.time.temporal.ChronoUnit.DAYS, 1))) {
+            if (latest.get().getCreatedAt().isBefore(Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS))) {
                  return ResponseEntity.ok(ApiResult.ok("최신 뉴스 요약을 생성 중입니다. 잠시만 기다려주세요."));
             }
             String txt = latest.get().getSummaryText();
