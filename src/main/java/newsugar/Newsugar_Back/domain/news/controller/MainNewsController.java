@@ -72,7 +72,7 @@ public class MainNewsController {
                 .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
                 .findFirst();
         if (latest.isPresent()) {
-            if (latest.get().getCreatedAt().isBefore(Instant.now().minus(java.time.temporal.ChronoUnit.DAYS, 1))) {
+            if (latest.get().getCreatedAt().isBefore(Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS))) {
                 // 오래된 데이터는 무시하고 아래 실시간 생성 로직으로 진행
             } else {
                 String txt = latest.get().getSummaryText();
