@@ -52,11 +52,13 @@ public class GoogleService {
                             .email(googleUser.email())
                             .name(googleUser.name())
                             .build();
-                    return userRepository.save(newUser);
+                    User savedUser = userRepository.save(newUser);
+
+                    scoreService.createScore(savedUser.getId());
+
+                    return savedUser;
                 });
 
-        // 점수 초기화
-        scoreService.createScore(user.getId());
 
         String accessTokenJwt = jwtUtil.generateToken(user.getId());
         String refreshTokenJwt = jwtUtil.generateRefreshToken(user.getId());
