@@ -77,14 +77,30 @@ public class NewsService {
         }
 
         String url = builder.toUriString();
-        return restTemplate.getForObject(url, DeepSearchResponseDTO.class);
+        DeepSearchResponseDTO response = restTemplate.getForObject(url, DeepSearchResponseDTO.class);
+        
+        // API 응답 후 Java 레벨에서 날짜 필터링 수행 (API가 파라미터를 무시하거나 부정확한 경우 대비)
+        if (response != null && response.data() != null) {
+            List<ArticleDTO> filteredData = filterByDate(response.data(), dateFrom, dateTo);
+            return new DeepSearchResponseDTO(
+                response.detail(),
+                response.total_items(),
+                response.total_pages(),
+                response.page(),
+                response.page_size(),
+                filteredData
+            );
+        }
+        
+        return response;
     }
 
     public DeepSearchResponseDTO getNewsByKeyword(String keyword, Integer page, Integer page_size){
 
         LocalDate today = LocalDate.now(java.time.ZoneId.of("Asia/Seoul"));
-        // 검색 정확도를 위해 최근 1년 데이터로 제한
-        LocalDate dateFrom = today.minusYears(1);
+        // 검색 정확도를 위해 최근 1개월 데이터로 제한 (기존 1년 -> 1개월)
+        LocalDate dateFrom = today.minusMonths(1);
+        LocalDate dateTo = today;
 
         // 검색어 전처리: 정확도 향상을 위해 모든 검색어를 따옴표로 감쌈 (이미 감싸져 있지 않다면)
         // 이렇게 해야 DeepSearch가 형태소 분석을 하지 않고 정확한 키워드 매칭을 수행함
@@ -105,6 +121,7 @@ public class NewsService {
                 .queryParam("sort", "date")
                 .queryParam("uniquify", "true")
                 .queryParam("date_from", dateFrom.toString())
+                .queryParam("date_to", dateTo.toString())
                 .queryParam("page", page)
                 .queryParam("page_size", page_size)
                 .queryParam("api_key", apiKey)
@@ -117,12 +134,15 @@ public class NewsService {
         // API 호출
         DeepSearchResponseDTO response = restTemplate.getForObject(uri, DeepSearchResponseDTO.class);
 
-        // 결과 중복 제거 (API의 uniquify가 완벽하지 않은 경우 대비)
+        // 결과 중복 제거 (API의 uniquify가 완벽하지 않은 경우 대비) 및 날짜 필터링
         if (response != null && response.data() != null) {
             List<ArticleDTO> distinctArticles = response.data().stream()
                 .filter(distinctByKey(article -> article.title() + "_" + article.publisher()))
                 .collect(Collectors.toList());
             
+            // 날짜 필터링 적용
+            List<ArticleDTO> filteredData = filterByDate(distinctArticles, dateFrom, dateTo);
+
             // 레코드 재생성 (데이터만 교체)
             return new DeepSearchResponseDTO(
                 response.detail(),
@@ -130,11 +150,38 @@ public class NewsService {
                 response.total_pages(),
                 response.page(),
                 response.page_size(),
-                distinctArticles
+                filteredData
             );
         }
 
         return response;
+    }
+
+    // 날짜 필터링 헬퍼 메서드
+    private List<ArticleDTO> filterByDate(List<ArticleDTO> articles, LocalDate dateFrom, LocalDate dateTo) {
+        if (articles == null || articles.isEmpty()) return List.of();
+        
+        return articles.stream()
+            .filter(article -> {
+                if (article.published_at() == null) return false;
+                try {
+                    // 날짜 파싱 (YYYY-MM-DD 또는 ISO 형식)
+                    LocalDate pubDate;
+                    String pubStr = article.published_at();
+                    if (pubStr.length() > 10) {
+                        pubStr = pubStr.substring(0, 10);
+                    }
+                    pubDate = LocalDate.parse(pubStr);
+                    
+                    if (dateFrom != null && pubDate.isBefore(dateFrom)) return false;
+                    if (dateTo != null && pubDate.isAfter(dateTo)) return false;
+                    return true;
+                } catch (Exception e) {
+                    // 날짜 형식이 올바르지 않으면 제외
+                    return false;
+                }
+            })
+            .collect(Collectors.toList());
     }
 
     // 중복 제거를 위한 유틸리티 메서드
