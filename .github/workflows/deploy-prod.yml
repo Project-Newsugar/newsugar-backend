@@ -35,6 +35,8 @@ jobs:
         ./gradlew clean bootJar -x test
         echo "==== build/libs 디렉토리 내용 ===="
         ls -al build/libs
+        echo "==== 모든 JAR 확인 ===="
+        find . -name "*.jar"
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
