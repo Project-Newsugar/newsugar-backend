@@ -2,7 +2,7 @@ name: Deploy to EKS with ArgoCD
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main" ]
 
 env:
   AWS_REGION: ap-northeast-2
