@@ -20,8 +20,10 @@ public enum ErrorCode {
     // 퀴즈 관련
     QUIZ_NOT_FOUND,
     QUIZ_EXPIRED,
-
     // 콘텐츠 관련
-    CONTENT_NOT_AVAILABLE
+    CONTENT_NOT_AVAILABLE,
+
+    //구글 소셜 로그인
+    GOOGLE_LOGIN_FAILED
 }
 

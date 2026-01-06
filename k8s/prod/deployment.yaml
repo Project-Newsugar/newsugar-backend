@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: newsugar-backend-prod
+  namespace: default
+  labels:
+    app: newsugar-backend
+    env: prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: newsugar-backend
+      env: prod
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: newsugar-backend
+        env: prod
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
+    spec:
+      containers:
+        - name: newsugar-backend
+          image: 061039804626.dkr.ecr.ap-northeast-2.amazonaws.com/newsugar-backend:0c6ee30465e106a64e292a75681728773e085c8c
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: newsugar-secrets-prod
+                  key: db-url
+            - name: SPRING_JPA_DATABASE_PLATFORM
+              value: "org.hibernate.dialect.MySQL8Dialect"
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: "update"
+            - name: SPRING_SQL_INIT_MODE
+              value: "always"
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: newsugar-secrets-prod
+                  key: db-username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: newsugar-secrets-prod
+                  key: db-password
+            - name: NEWS_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: newsugar-secrets-prod
+                  key: news-api-key
+            - name: QUIZ_AI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: newsugar-secrets-prod
+                  key: quiz-ai-api-key
+            - name: REDIS_HOST
+              value: "newsugar-prod-redis.2iapp0.ng.0001.apn2.cache.amazonaws.com"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: newsugar-secrets-prod
+                  key: jwt-secret
+            - name: JWT_EXPIRATION
+              value: "86400000"
+            - name: JWT_REFRESH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: newsugar-secrets-prod
+                  key: jwt-refresh-secret
+            - name: JWT_REFRESH_EXPIRATION
+              value: "604800000"
+            - name: QUIZ_AI_TIMEOUT_MS
+              value: "60000"
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: AWS_XRAY_DAEMON_ADDRESS
+              value: "$(HOST_IP):2000"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 120
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 5

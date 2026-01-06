@@ -1,8 +1,6 @@
 version: '3.8'
 
 services:
-
-# 앱 서버 정보
   app:
     build:
       context: .
@@ -11,25 +9,50 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - db #앱이 사용할 DB 접속 정보 (환경변수)
+      - db
+      - redis
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/news_db # DB 서버 주소 db:3306
+      # Spring Profile
+      SPRING_PROFILES_ACTIVE: dev
+      
+      # Database
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/news_db?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: qwer1234 #팀 비밀번호
+      SPRING_DATASOURCE_PASSWORD: qwer1234
+      
+      # Redis (Docker 내부 통신용)
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      
+      # App Secrets (호스트의 .env 파일에서 주입됨)
+      NEWS_API_KEY: ${NEWS_API_KEY}
+      QUIZ_AI_BASE_URL: ${QUIZ_AI_BASE_URL}
+      QUIZ_AI_API_KEY: ${QUIZ_AI_API_KEY}
+      QUIZ_AI_TIMEOUT_MS: ${QUIZ_AI_TIMEOUT_MS}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION}
 
-  # MySQL 데이터베이스 서버정보
   db:
     image: mysql:8.0
     container_name: news-sugar-db
     ports:
-      - "3306:3306" #3306포트를 외부와 연결
+      - "3307:3306"
     environment:
       MYSQL_DATABASE: news_db
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_USER: user
-      MYSQL_PASSWORD: qwer1234 #팀 비밀번호
+      MYSQL_PASSWORD: qwer1234
     volumes:
       - db-data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  redis:
+    image: redis:alpine
+    container_name: news-sugar-redis
+    ports:
+      - "6379:6379"
 
 volumes:
   db-data:

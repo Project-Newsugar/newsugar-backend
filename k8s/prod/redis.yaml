@@ -1,0 +1,50 @@
+# Prod 환경 Redis (임시)
+# TODO: 추후 AWS ElastiCache 사용 확정 시 이 파일은 삭제하고 Deployment env 변수만 수정하면 됌
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-prod
+  namespace: default
+  labels:
+    app: redis
+    env: prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+      env: prod
+  template:
+    metadata:
+      labels:
+        app: redis
+        env: prod
+    spec:
+      containers:
+        - name: redis
+          image: redis:alpine
+          ports:
+            - containerPort: 6379
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service-prod
+  namespace: default
+  labels:
+    app: redis
+    env: prod
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: redis
+    env: prod

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-dev
+  namespace: default
+  labels:
+    app: redis
+    env: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+      env: dev
+  template:
+    metadata:
+      labels:
+        app: redis
+        env: dev
+    spec:
+      containers:
+        - name: redis
+          image: redis:alpine
+          ports:
+            - containerPort: 6379
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service-dev
+  namespace: default
+  labels:
+    app: redis
+    env: dev
+spec:
+  ports:
+    - port: 6379
+      targetPort: 6379
+  selector:
+    app: redis
+    env: dev
