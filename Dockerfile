@@ -1,9 +1,11 @@
 # ---------- Build stage ----------
-FROM gradle:8.5-jdk17 AS builder
+FROM amazoncorretto:17-alpine-jdk AS builder
 WORKDIR /app
 
 COPY . .
-RUN gradle clean bootJar -x test
+
+RUN chmod +x gradlew
+RUN ./gradlew clean bootJar -x test
 
 # ---------- Run stage ----------
 FROM amazoncorretto:17-alpine-jdk
