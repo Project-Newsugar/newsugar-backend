@@ -15,21 +15,27 @@ spec:
       releaseName: kube-prometheus-stack
       values: |
         grafana:
+          adminPassword: "newsugar!2026"
           service:
             type: LoadBalancer
             annotations:
               service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
               service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+          persistence:
+            enabled: true
+            storageClassName: gp3
+            accessModes: ["ReadWriteOnce"]
+            size: 5Gi
         prometheus:
           prometheusSpec:
             storageSpec:
               volumeClaimTemplate:
                 spec:
-                  storageClassName: gp2
+                  storageClassName: gp3
                   accessModes: ["ReadWriteOnce"]
                   resources:
                     requests:
-                      storage: 10Gi
+                      storage: 50Gi
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
