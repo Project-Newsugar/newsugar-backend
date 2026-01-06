@@ -3,6 +3,7 @@ package newsugar.Newsugar_Back.domain.summary.service;
 import newsugar.Newsugar_Back.common.CustomException;
 import newsugar.Newsugar_Back.common.ErrorCode;
 import newsugar.Newsugar_Back.domain.ai.GeminiService;
+import newsugar.Newsugar_Back.domain.news.controller.NewsApiController;
 import newsugar.Newsugar_Back.domain.news.dto.deepservicedto.ArticleDTO;
 import newsugar.Newsugar_Back.domain.news.dto.deepservicedto.DeepSearchResponseDTO;
 import newsugar.Newsugar_Back.domain.news.service.NewsService;
@@ -28,13 +29,10 @@ public class CategorySummaryService {
     }
 
     public String generateCategorySummary(String category) {
-        // DeepSearch API에서 뉴스 5개 가져오기 (최근 1일 데이터로 제한하여 최신성 보장)
-        DeepSearchResponseDTO response = newsService.getNewsByCategory(
-                List.of(category), // 단일 카테고리
-                LocalDate.now(java.time.ZoneId.of("Asia/Seoul")).minusDays(1), // 최근 1일(어제~오늘)
-                1,                // 첫 페이지
-                5                 // 5개만
-        );
+        // DeepSearch API에서 뉴스 5개 가져오기 (최근 3일 데이터로 제한)
+        LocalDate dateFrom = LocalDate.now();
+        DeepSearchResponseDTO response =
+                newsService.getNewsByCategory(List.of(category), dateFrom, 1, 5);
 
         if (response == null || response.data() == null || response.data().isEmpty()) {
             return "최근 24시간 내 해당 카테고리의 주요 뉴스가 충분하지 않아 요약을 생성할 수 없습니다.";
