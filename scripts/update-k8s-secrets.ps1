@@ -5,7 +5,7 @@
 $DB_USER = "admin"
 $DB_PASS = "p)XWs2PQNq%4tJku"
 $NEWS_API_KEY = "23c9561ec76e479fa72778d73ff629f6"
-$QUIZ_AI_API_KEY = "AIzaSyBs82S0035DIYzVOWvU_3-Z99u2sOEjrj0"
+$QUIZ_AI_API_KEY = "AIzaSyBQvfAPhljpve7j0pkdPXepBbX3fCIe8H8"
 $JWT_SECRET = "your_jwt_secret_key_must_be_long_enough_for_security_reasons"
 $JWT_REFRESH_SECRET = "your_jwt_refresh_secret_key_must_be_long_enough"
 

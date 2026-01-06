@@ -14,7 +14,6 @@ public class GeminiService {
     private final GeminiClient geminiClient; // 이미 있거나 만들 예정
 
     public String summarize(String category, List<String> summaries) {
-
         String joinedSummaries = summaries.stream()
                 .map(s -> "- " + s)
                 .collect(Collectors.joining("\n"));
