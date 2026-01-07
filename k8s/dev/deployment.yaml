@@ -25,7 +25,7 @@ spec:
       containers:
         - name: newsugar-backend
           #AWS Account ID: 0610-3980-4626
-          image: 061039804626.dkr.ecr.ap-northeast-2.amazonaws.com/newsugar-backend:dev
+          image: 061039804626.dkr.ecr.ap-northeast-2.amazonaws.com/newsugar-backend:95c00f9fddd77587a34af4e9646e0847c6dfb7bb
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
