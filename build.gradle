@@ -8,8 +8,6 @@ group = 'newsugar'
 version = '0.0.1-SNAPSHOT'
 description = 'AI-Powered News Summarization Service Backend'
 
-buildDir = file(System.getProperty("java.io.tmpdir") + "/newsugar-backend-build")
-
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)
@@ -64,5 +62,13 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.named('bootJar') {
+	enabled = true
+}
+
+tasks.named('jar') {
+	enabled = false
 }
 

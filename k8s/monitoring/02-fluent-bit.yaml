@@ -76,7 +76,7 @@ data:
     [OUTPUT]
         Name                  cloudwatch_logs
         Match                 kube.*
-        Region                ap-northeast-2
+        Region                ap-northeast-1
         Log_Group_Name        /aws/containerinsights/newsugar-cluster/application
         Log_Stream_Prefix     fluent-bit-
         Auto_Create_Group     true
