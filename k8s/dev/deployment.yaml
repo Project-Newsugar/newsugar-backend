@@ -76,7 +76,7 @@ spec:
               protocol: UDP
           env:
             - name: AWS_REGION
-              value: "ap-northeast-2"
+              value: "ap-northeast-1"
           resources:
             requests:
               cpu: "32m"
