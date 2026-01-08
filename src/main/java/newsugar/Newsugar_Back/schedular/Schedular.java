@@ -70,11 +70,18 @@ public class Schedular {
 
     @Scheduled(cron = "0 0 * * * *")
     public void generateTodayMainContent() {
-        if (!enableScheduler) {
+        generateTodayMainContent(false);
+    }
+
+    public void generateTodayMainContent(boolean force) {
+        if (!enableScheduler && !force) {
             System.out.println("스케줄러 비활성화 상태: generateTodayMainContent 스킵");
             return;
         }
-        dailyTaskService.executeDailyRoutine();
+        if (force) {
+             System.out.println("스케줄러: 강제 실행 요청 수신");
+        }
+        dailyTaskService.executeDailyRoutine(force);
     }
 
     // 서버 시작 시 초기 데이터 생성을 위해 실행

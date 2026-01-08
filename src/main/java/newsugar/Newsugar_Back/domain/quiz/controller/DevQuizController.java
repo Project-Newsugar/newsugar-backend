@@ -134,7 +134,8 @@ public class DevQuizController {
 
     @PostMapping("/today-main/generate")
     public ResponseEntity<ApiResult<Void>> generateTodayMainQuizDev() {
-        schedular.generateTodayMainContent();
+        // 강제 실행(force=true)으로 중복 체크 및 스케줄러 활성화 여부 무시
+        schedular.generateTodayMainContent(true);
         return ResponseEntity.ok(ApiResult.ok(null));
     }
 
