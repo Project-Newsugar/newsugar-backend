@@ -51,10 +51,18 @@ public class DailyTaskService {
 
     // @Transactional // 트랜잭션 롤백 문제 방지를 위해 주석 처리 (개별 저장 로직에서 처리됨)
     public void executeDailyRoutine() {
-        // 중복 실행 방지 (이미 오늘 날짜의 요약이 있으면 스킵하거나 덮어쓰기 정책 결정 필요)
-        // 현재는 매시간 실행되므로 중복 생성이 발생할 수 있음.
-        // 하지만 MainNewsController에서 최신 요약 하나만 가져다 쓰므로 큰 문제는 아님.
-        // 다만 DB 데이터가 쌓이는 것을 방지하려면 여기서 체크 로직 추가 가능.
+        // 최근 50분 이내에 생성된 요약이 있는지 확인하여 중복 실행 방지 (서버 재시작 시 폭주 방지)
+        var latestOpt = summaryRepository.findTopByOrderByCreatedAtDesc();
+        if (latestOpt.isPresent()) {
+            Summary latest = latestOpt.get();
+            Instant now = Instant.now();
+            Instant created = latest.getCreatedAt();
+            // 50분 이내에 생성된 것이 있으면 스킵
+            if (created != null && Duration.between(created, now).toMinutes() < 50) {
+                System.out.println("DailyTaskService: 최근 50분 이내에 생성된 요약이 있어 생성을 건너뜁니다. (Last ID: " + latest.getId() + ")");
+                return;
+            }
+        }
 
         // 뉴스 가져오기 및 요약 생성
         Summary summary = generateSummary();

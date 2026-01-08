@@ -86,9 +86,17 @@ public class Schedular {
             return;
         }
         
-        System.out.println("서버 시작: 초기 데이터 생성 로직은 과도한 API 호출 방지를 위해 비활성화합니다.");
-        // System.out.println("서버 시작: 초기 뉴스 요약 및 퀴즈 생성 시작...");
-        // dailyTaskService.executeDailyRoutine();
+        System.out.println("서버 시작: 초기 데이터 생성 로직 실행 (중복 체크 포함)");
+        // 중복 체크 로직이 DailyTaskService 내부에 있으므로 안전하게 호출 가능
+        new Thread(() -> {
+             try {
+                 // 서버 시작 직후 리소스 경합 방지를 위해 잠시 대기
+                 Thread.sleep(5000); 
+                 dailyTaskService.executeDailyRoutine();
+             } catch (InterruptedException e) {
+                 Thread.currentThread().interrupt();
+             }
+        }).start();
         
         // 카테고리 요약도 비동기로 시작 (API 쿼터 고려)
         // new Thread(() -> {
