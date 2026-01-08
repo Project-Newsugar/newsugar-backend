@@ -59,12 +59,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: newsugar-secrets-prod
-                  key: news-api-key
+                  key: NEWS_API_KEY
             - name: QUIZ_AI_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: newsugar-secrets-prod
-                  key: quiz-ai-api-key
+                  key: QUIZ_AI_API_KEY
             - name: REDIS_HOST
               value: "newsugar-prod-redis.2iapp0.ng.0001.apn2.cache.amazonaws.com"
             - name: REDIS_PORT
@@ -73,14 +73,14 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: newsugar-secrets-prod
-                  key: jwt-secret
+                  key: JWT_SECRET
             - name: JWT_EXPIRATION
               value: "86400000"
             - name: JWT_REFRESH_SECRET
               valueFrom:
                 secretKeyRef:
                   name: newsugar-secrets-prod
-                  key: jwt-refresh-secret
+                  key: JWT_REFRESH_SECRET
             - name: JWT_REFRESH_EXPIRATION
               value: "604800000"
             - name: QUIZ_AI_TIMEOUT_MS
