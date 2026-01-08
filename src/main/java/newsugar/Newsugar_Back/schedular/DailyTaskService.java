@@ -97,17 +97,28 @@ public class DailyTaskService {
         }
 
         // Gemini API 호출 (최대 3회 재시도 및 실패 시 단순 연결로 대체)
-        String todaySummary;
+        String todaySummary = null;
         try {
             todaySummary = geminiService.summarize("오늘 주요", summaries);
         } catch (Exception e) {
             System.err.println("AI 요약 실패 (API Quota 등): " + e.getMessage());
+        }
+
+        // AI 결과가 없거나 실패한 경우 Fallback 처리
+        if (todaySummary == null || todaySummary.isBlank()) {
+            System.out.println("AI 요약 결과가 비어있습니다. 뉴스 요약본 단순 연결로 대체합니다.");
             // Fallback: AI 실패 시 수집된 뉴스 요약들을 단순 연결하여 사용
             todaySummary = String.join("\n", summaries);
             // Fallback 데이터도 너무 길면 자름
             if (todaySummary.length() > 2000) {
                 todaySummary = todaySummary.substring(0, 2000) + "...";
             }
+        }
+
+        // 최종적으로도 내용이 없으면 저장하지 않음
+        if (todaySummary == null || todaySummary.isBlank()) {
+            System.out.println("요약할 내용이 전혀 없습니다. Summary 생성을 건너뜁니다.");
+            return null;
         }
 
         // DB 컬럼 용량(TEXT) 초과 방지를 위한 안전장치 (최대 3000자)
