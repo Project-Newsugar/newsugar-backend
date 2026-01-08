@@ -89,11 +89,11 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.hostIP
+            - name: AWS_XRAY_DAEMON_ADDRESS
+              value: "$(HOST_IP):2000"
           envFrom:
             - secretRef:
                 name: db-secret
-            - name: AWS_XRAY_DAEMON_ADDRESS
-              value: "$(HOST_IP):2000"
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
