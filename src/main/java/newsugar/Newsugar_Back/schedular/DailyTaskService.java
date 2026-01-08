@@ -55,20 +55,7 @@ public class DailyTaskService {
     }
 
     public void executeDailyRoutine(boolean force) {
-        // 최근 50분 이내에 생성된 요약이 있는지 확인하여 중복 실행 방지 (서버 재시작 시 폭주 방지)
-        if (!force) {
-            var latestOpt = summaryRepository.findTopByOrderByCreatedAtDesc();
-            if (latestOpt.isPresent()) {
-                Summary latest = latestOpt.get();
-                Instant now = Instant.now();
-                Instant created = latest.getCreatedAt();
-                // 50분 이내에 생성된 것이 있으면 스킵
-                if (created != null && Duration.between(created, now).toMinutes() < 50) {
-                    System.out.println("DailyTaskService: 최근 50분 이내에 생성된 요약이 있어 생성을 건너뜁니다. (Last ID: " + latest.getId() + ")");
-                    return;
-                }
-            }
-        } else {
+        if (force) {
              System.out.println("DailyTaskService: 강제 실행 요청으로 중복 체크를 건너뜁니다.");
         }
 
