@@ -1,5 +1,0 @@
-spec:
-  storage:
-    volumeClaimTemplate:
-      spec:
-        storageClassName: gp2
