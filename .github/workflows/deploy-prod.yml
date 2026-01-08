@@ -90,5 +90,5 @@ jobs:
         # 원격 저장소의 최신 변경사항을 가져와서 리베이스 (충돌 방지)
         git pull origin main --rebase
         
-        # develop 브랜치에 푸시 (HEAD를 develop으로)
+        # main 브랜치에 푸시
         git push origin main
