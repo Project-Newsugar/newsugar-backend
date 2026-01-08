@@ -48,7 +48,7 @@ spec:
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               value: "update"
             - name: SPRING_SQL_INIT_MODE
-              value: "always"
+              value: "never"
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:mysql://$(DB_HOST):3306/news_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8"
             - name: SPRING_DATASOURCE_USERNAME
@@ -66,9 +66,11 @@ spec:
                   name: newsugar-secrets-prod
                   key: QUIZ_AI_API_KEY
             - name: REDIS_HOST
-              value: "newsugar-prod-redis.2iapp0.ng.0001.apn2.cache.amazonaws.com"
+              value: "redis-service-prod"
             - name: REDIS_PORT
               value: "6379"
+            - name: ENABLE_SCHEDULER
+              value: "true"
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
