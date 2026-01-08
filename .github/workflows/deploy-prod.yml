@@ -87,7 +87,7 @@ jobs:
         docker push $ECR_REGISTRY_TOKYO/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY_TOKYO/$ECR_REPOSITORY:latest
         
-        echo "image=$ECR_REGISTRY_TOKYO/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+        echo "image=$ECR_REGISTRY_SEOUL/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
     - name: Update Kubernetes Manifest
       env:
