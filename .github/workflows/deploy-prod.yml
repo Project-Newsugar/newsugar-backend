@@ -5,9 +5,9 @@ on:
     branches: [ "main" ]
 
 env:
-  AWS_REGION: ap-northeast-2
+  AWS_REGION: ap-northeast-1
   ECR_REPOSITORY: newsugar-backend
-  ECR_REGISTRY: 061039804626.dkr.ecr.ap-northeast-2.amazonaws.com
+  ECR_REGISTRY: 061039804626.dkr.ecr.ap-northeast-1.amazonaws.com
 
 permissions:
   contents: write
@@ -38,40 +38,67 @@ jobs:
         echo "==== 모든 JAR 확인 ===="
         find . -name "*.jar"
 
-    - name: Configure AWS credentials
+    - name: Configure AWS credentials (Seoul)
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
+        aws-region: ap-northeast-2
 
-    - name: Login to Amazon ECR
-      id: login-ecr
+    - name: Login to Amazon ECR (Seoul)
+      id: login-ecr-seoul
       uses: aws-actions/amazon-ecr-login@v2
+      with:
+        registry-type: private
 
-    - name: Build, tag, and push image to Amazon ECR
+    - name: Configure AWS credentials (Tokyo)
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-northeast-1
+
+    - name: Login to Amazon ECR (Tokyo)
+      id: login-ecr-tokyo
+      uses: aws-actions/amazon-ecr-login@v2
+      with:
+        registry-type: private
+
+    - name: Build, tag, and push image to Amazon ECR (Multi-Region)
       id: build-image
       env:
         IMAGE_TAG: ${{ github.sha }}
+        ECR_REGISTRY_SEOUL: ${{ steps.login-ecr-seoul.outputs.registry }}
+        ECR_REGISTRY_TOKYO: ${{ steps.login-ecr-tokyo.outputs.registry }}
       run: |
         # Docker 이미지 빌드
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+        docker build -t $ECR_REGISTRY_SEOUL/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker build -t $ECR_REGISTRY_SEOUL/$ECR_REPOSITORY:latest .
         
-        # ECR로 푸시
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        # 서울 리전용 태그 추가
+        docker tag $ECR_REGISTRY_SEOUL/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY_TOKYO/$ECR_REPOSITORY:$IMAGE_TAG
+        docker tag $ECR_REGISTRY_SEOUL/$ECR_REPOSITORY:latest $ECR_REGISTRY_TOKYO/$ECR_REPOSITORY:latest
         
-        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+        # 서울 ECR로 푸시
+        docker push $ECR_REGISTRY_SEOUL/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REGISTRY_SEOUL/$ECR_REPOSITORY:latest
+        
+        # 도쿄 ECR로 푸시
+        docker push $ECR_REGISTRY_TOKYO/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REGISTRY_TOKYO/$ECR_REPOSITORY:latest
+        
+        echo "image=$ECR_REGISTRY_TOKYO/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
     - name: Update Kubernetes Manifest
       env:
         IMAGE_TAG: ${{ github.sha }}
+        # 주 리전인 서울 레지스트리 주소 사용 (도쿄는 백업)
+        ECR_REGISTRY_TARGET: ${{ steps.login-ecr-seoul.outputs.registry }}
       run: |
         # deployment.yaml 파일의 이미지 태그 업데이트
         cd k8s/prod
         # sed 명령어로 이미지 태그 부분 교체 (기존 태그가 무엇이든 github.sha로 변경)
-        sed -i "s|image: $ECR_REGISTRY/$ECR_REPOSITORY:.*|image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" deployment.yaml
+        sed -i "s|image: .*/$ECR_REPOSITORY:.*|image: $ECR_REGISTRY_TARGET/$ECR_REPOSITORY:$IMAGE_TAG|g" deployment.yaml
         
         # 변경 내용 확인
         cat deployment.yaml
@@ -90,5 +117,5 @@ jobs:
         # 원격 저장소의 최신 변경사항을 가져와서 리베이스 (충돌 방지)
         git pull origin main --rebase
         
-        # develop 브랜치에 푸시 (HEAD를 develop으로)
+        # main 브랜치에 푸시
         git push origin main
