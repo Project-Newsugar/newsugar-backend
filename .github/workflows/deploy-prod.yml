@@ -92,11 +92,13 @@ jobs:
     - name: Update Kubernetes Manifest
       env:
         IMAGE_TAG: ${{ github.sha }}
+        # 주 리전인 서울 레지스트리 주소 사용 (도쿄는 백업)
+        ECR_REGISTRY_TARGET: ${{ steps.login-ecr-seoul.outputs.registry }}
       run: |
         # deployment.yaml 파일의 이미지 태그 업데이트
         cd k8s/prod
         # sed 명령어로 이미지 태그 부분 교체 (기존 태그가 무엇이든 github.sha로 변경)
-        sed -i "s|image: $ECR_REGISTRY/$ECR_REPOSITORY:.*|image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" deployment.yaml
+        sed -i "s|image: .*/$ECR_REPOSITORY:.*|image: $ECR_REGISTRY_TARGET/$ECR_REPOSITORY:$IMAGE_TAG|g" deployment.yaml
         
         # 변경 내용 확인
         cat deployment.yaml
