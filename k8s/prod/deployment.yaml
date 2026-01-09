@@ -113,3 +113,6 @@ spec:
             limits:
               cpu: 512m
               memory: 64Mi
+          env:
+            - name: AWS_REGION
+              value: "ap-northeast-2"
