@@ -127,10 +127,15 @@ public class Schedular {
         }).start();
         
         // 카테고리 요약도 비동기로 시작 (API 쿼터 고려)
-        // new Thread(() -> {
-        //    System.out.println("서버 시작: 카테고리 요약 백그라운드 생성 시작...");
-        //    runDailyTask();
-        // }).start();
+        new Thread(() -> {
+           System.out.println("서버 시작: 카테고리 요약 백그라운드 생성 시작... (60초 후 시작)");
+           try {
+               Thread.sleep(60000); // 1분 대기 후 시작
+               runDailyTask();
+           } catch (InterruptedException e) {
+               Thread.currentThread().interrupt();
+           }
+        }).start();
     }
 }
 
