@@ -49,7 +49,16 @@ public class CategorySummaryService {
         }
 
         // Gemmini로 요약
-        String categorySummary = geminiService.summarize(category,summaries);
+        String categorySummary;
+        try {
+            categorySummary = geminiService.summarize(category, summaries);
+        } catch (Exception e) {
+            System.err.println("Category Summary Generation Failed: " + e.getMessage());
+            // Fallback: 단순 연결 (너무 길면 자름)
+            String fallback = String.join("\n", summaries);
+            if (fallback.length() > 500) fallback = fallback.substring(0, 500) + "... (AI 요약 실패로 원문 일부 표시)";
+            return "AI 요약 서비스가 일시적으로 원활하지 않습니다. 잠시 후 다시 시도해주세요.\n\n" + fallback;
+        }
 
         // 캐시에 저장 (메모리 캐시 및 Redis 캐시 동시 갱신 권장)
         cache.put(category, categorySummary);
