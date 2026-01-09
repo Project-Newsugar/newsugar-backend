@@ -81,12 +81,6 @@ spec:
               value: "604800000"
             - name: QUIZ_AI_TIMEOUT_MS
               value: "60000"
-            - name: HOST_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.hostIP
-            - name: AWS_XRAY_DAEMON_ADDRESS
-              value: "$(HOST_IP):2000"
           envFrom:
             - secretRef:
                 name: db-secret
@@ -106,3 +100,16 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 10
             failureThreshold: 5
+        - name: xray-daemon
+          image: public.ecr.aws/xray/aws-xray-daemon:latest
+          command: ["/xray", "-o", "-b", "0.0.0.0:2000"]
+          ports:
+            - containerPort: 2000
+              protocol: UDP
+          resources:
+            requests:
+              cpu: 256m
+              memory: 32Mi
+            limits:
+              cpu: 512m
+              memory: 64Mi
