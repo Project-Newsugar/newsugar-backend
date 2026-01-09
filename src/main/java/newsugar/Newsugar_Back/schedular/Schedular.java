@@ -1,5 +1,7 @@
 package newsugar.Newsugar_Back.schedular;
 
+import com.amazonaws.xray.AWSXRay;
+import com.amazonaws.xray.entities.Segment;
 import newsugar.Newsugar_Back.domain.summary.repository.CategorySummaryRedis;
 import newsugar.Newsugar_Back.domain.summary.service.CategorySummaryService;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,6 +47,9 @@ public class Schedular {
             System.out.println("카테고리 요약 작업이 이미 실행 중입니다. 스킵합니다.");
             return;
         }
+        
+        // X-Ray Segment 시작
+        Segment segment = AWSXRay.beginSegment("CategorySummaryJob");
         isCategoryTaskRunning = true;
         try {
             // 중복 실행 방지: 스케줄러가 너무 빨리 돌아서 이전 작업이 끝나기 전에 또 실행되는 것을 방지
@@ -60,11 +65,16 @@ public class Schedular {
                     Thread.sleep(30000); 
                 } catch (Exception e) {
                     System.err.println("카테고리 요약 생성 중 오류 발생 (" + category + "): " + e.getMessage());
+                    segment.addException(e); // X-Ray에 에러 기록
                     // 오류가 나도 다음 카테고리는 계속 진행 시도
                 }
             }
+        } catch (Exception e) {
+            segment.addException(e);
+            throw e;
         } finally {
             isCategoryTaskRunning = false;
+            AWSXRay.endSegment(); // X-Ray Segment 종료
         }
     }
 
@@ -78,10 +88,21 @@ public class Schedular {
             System.out.println("스케줄러 비활성화 상태: generateTodayMainContent 스킵");
             return;
         }
-        if (force) {
-             System.out.println("스케줄러: 강제 실행 요청 수신");
+        
+        // X-Ray Segment 시작
+        Segment segment = AWSXRay.beginSegment("DailyMainContentJob");
+        try {
+            if (force) {
+                 System.out.println("스케줄러: 강제 실행 요청 수신");
+                 segment.putAnnotation("forced", true); // 강제 실행 여부 태깅
+            }
+            dailyTaskService.executeDailyRoutine(force);
+        } catch (Exception e) {
+            segment.addException(e);
+            throw e;
+        } finally {
+            AWSXRay.endSegment();
         }
-        dailyTaskService.executeDailyRoutine(force);
     }
 
     // 서버 시작 시 초기 데이터 생성을 위해 실행
