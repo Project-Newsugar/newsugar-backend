@@ -23,9 +23,9 @@ public class GeminiClient {
     }
 
     public String generateContent(String prompt) {
-        // User requested Gemma-3 -27B, but using Gemini-1.5-Pro as the most stable and capable alternative available via API.
-        // Previous model 'gemini-3-flash-preview' was invalid.
-        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=" + apiKey;
+        // User explicitly requested Gemma 3 27B IT model.
+        // Based on 2026-01-09 context, this model is available.
+        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemma-3-27b-it:generateContent?key=" + apiKey;
         GeminiRequestDTO request = GeminiRequestDTO.of(prompt);
 
         int maxRetries = 3; // 개발 테스트를 위해 재시도 횟수 감소
