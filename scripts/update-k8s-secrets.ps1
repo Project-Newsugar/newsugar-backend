@@ -2,8 +2,9 @@
 # Usage: ./update-k8s-secrets.ps1
 
 # Define secret values
+$DB_URL = "jdbc:mysql://newsugar-prod-aurora-cluster.cluster-c3qme6c6e7fj.ap-northeast-2.rds.amazonaws.com:3306/newsugar?serverTimezone=Asia/Seoul&characterEncoding=UTF-8"
 $DB_USER = "admin"
-$DB_PASS = "p)XWs2PQNq%4tJku"
+$DB_PASS = "9NRVL&u-[byv9GS9"
 $NEWS_API_KEY = "23c9561ec76e479fa72778d73ff629f6"
 $QUIZ_AI_API_KEY = "AIzaSyBQvfAPhljpve7j0pkdPXepBbX3fCIe8H8"
 $JWT_SECRET = "your_jwt_secret_key_must_be_long_enough_for_security_reasons"
@@ -14,6 +15,7 @@ Write-Host "Updating newsugar-secrets-prod..."
 # Create or Update Secret (Dry run to yaml -> apply)
 # Using generic secret creation
 kubectl create secret generic newsugar-secrets-prod `
+    --from-literal=db-url=$DB_URL `
     --from-literal=db-username=$DB_USER `
     --from-literal=db-password=$DB_PASS `
     --from-literal=news-api-key=$NEWS_API_KEY `

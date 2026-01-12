@@ -17,7 +17,7 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
-    // 기본 보안 설정: 스웨거와 헬스 엔드포인트는 공개, 나머지는 임시 허용
+    // 보안 설정입니다. 스웨거랑 헬스 체크는 그냥 열어두고 나머지는 일단 다 열어놨는데 나중에 막아야 합니다.
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -42,7 +42,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // 프론트엔드 주소 허용 (로컬 및 배포 환경)
+        // 프론트엔드에서 요청 들어오는 거 허용해주는 겁니다. 로컬이랑 배포 주소 다 넣어놨습니다.
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:3000",
                 "http://localhost:5173",
@@ -51,7 +51,7 @@ public class SecurityConfig {
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
-        configuration.setExposedHeaders(List.of("Authorization")); // JWT 토큰 반환 시 필요할 수 있음
+        configuration.setExposedHeaders(List.of("Authorization")); // JWT 토큰 뱉을 때 이거 없으면 프론트에서 못 읽습니다.
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

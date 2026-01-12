@@ -22,9 +22,12 @@ import java.util.List;
 @Service
 public class RssNewsService {
 
+    // 구글 뉴스 RSS 주소입니다. 한국 뉴스만 긁어오게 세팅해놨습니다.
     private static final String FEED_URL = "https://news.google.com/rss?hl=ko&gl=KR&ceid=KR:ko";
     private final HttpClient client = HttpClient.newHttpClient();
 
+    // 뉴스 헤드라인 긁어오는 메소드입니다.
+    // API 키 아까워서 RSS 쓰는 거니까 너무 자주 부르지 마세요. 구글 형님이 차단할 수도 있습니다.
     public DeepSearchResponseDTO getTopHeadlines(Integer page, Integer page_size) {
         int p = page != null ? page : 1;
         int sz = page_size != null ? page_size : 10;
@@ -36,9 +39,12 @@ public class RssNewsService {
                     .build();
             HttpResponse<byte[]> res = client.send(req, HttpResponse.BodyHandlers.ofByteArray());
             if (res.statusCode() >= 300) {
+                // 구글이 화났나 봅니다. 빈 리스트 던집니다.
                 return new DeepSearchResponseDTO(null, 0, 0, p, sz, List.of());
             }
 
+            // 여기서부터는 XML 파싱하는 부분인데 좀 지저분합니다.
+            // RSS 구조 바뀌지 않는 이상 건드리지 마세요. 머리 아픕니다.
             byte[] bytes = res.body();
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -55,6 +61,7 @@ public class RssNewsService {
                 String pubDate = textContent(item, "pubDate");
                 String imageUrl = null;
 
+                // 썸네일 이미지 찾는 건데 없을 수도 있습니다.
                 NodeList enclosures = item.getElementsByTagName("enclosure");
                 if (enclosures.getLength() > 0) {
                     Element enc = (Element) enclosures.item(0);
@@ -62,11 +69,12 @@ public class RssNewsService {
                 }
 
                 String publisher = "Google News";
+                // ID가 없어서 링크나 제목 해시값으로 대충 만듭니다. 겹치면 운명입니다.
                 String id = link != null ? link : (title != null ? Integer.toString(title.hashCode()) : Integer.toString(i));
                 String publishedAt = pubDate;
                 if (publishedAt != null) {
                     try {
-                        // 그대로 두고 프론트에서 표시하도록
+                        // 날짜 포맷 변환 귀찮아서 그냥 둡니다.
                         publishedAt = publishedAt;
                     } catch (Exception ignored) {}
                 }

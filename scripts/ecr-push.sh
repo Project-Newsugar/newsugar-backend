@@ -1,8 +1,8 @@
 #!/bin/bash
 # ECR Push Script for Git Bash (Auto-configured)
-# 사용법: ./scripts/ecr-push.sh [-e <dev|prod>] [-r <REGION>] [-a <ACCOUNT_ID>]
+# 쓰는 법: ./scripts/ecr-push.sh -e dev (운영은 -e prod). 옵션 안 넣으면 기본값으로 돕니다.
 
-# 기본값 설정
+# 귀찮아서 박아놓은 기본값들.
 DEFAULT_REGION="ap-northeast-2"
 DEFAULT_ACCOUNT_ID="061039804626"
 DEFAULT_ENV="dev"
@@ -11,7 +11,7 @@ REGION=$DEFAULT_REGION
 ACCOUNT_ID=$DEFAULT_ACCOUNT_ID
 ENV=$DEFAULT_ENV
 
-# 파라미터 오버라이드 (옵션)
+# 옵션 들어오면 덮어씁니다.
 while getopts "r:a:e:" opt; do
   case $opt in
     r) REGION="$OPTARG"
@@ -38,7 +38,7 @@ IMAGE_TAG="$ENV"
 ECR_URI="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$REPO_NAME"
 FULL_IMAGE_NAME="$ECR_URI:$IMAGE_TAG"
 
-echo "=== 1. Logging in to AWS ECR... ==="
+echo "1. AWS ECR 로그인 뚫습니다."
 aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
 
 if [ $? -ne 0 ]; then
@@ -47,7 +47,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "=== 2. Building Docker Image... ==="
+echo "2. 도커 이미지 굽습니다."
 docker build -t $FULL_IMAGE_NAME .
 
 if [ $? -ne 0 ]; then
@@ -55,7 +55,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "=== 3. Pushing Image to ECR... ==="
+echo "3. ECR로 올립니다."
 docker push $FULL_IMAGE_NAME
 
 if [ $? -ne 0 ]; then

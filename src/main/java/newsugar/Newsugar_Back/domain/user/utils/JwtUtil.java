@@ -25,6 +25,7 @@ public class JwtUtil {
     private final Key refreshKey;
 
     public JwtUtil() {
+        // 환경변수에서 키값들 긁어옵니다. 없으면 에러 터집니다.
         Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
         
         String secret = System.getenv("JWT_SECRET");
@@ -47,6 +48,7 @@ public class JwtUtil {
         this.refreshKey = Keys.hmacShaKeyFor(JWT_REFRESH_SECRET.getBytes());
     }
 
+    // 액세스 토큰 굽습니다. 유효기간 짧으니까 빨리 쓰셔야 합니다.
     public String generateToken (Long userId){
         Date now = new Date();
         Date expiry = new Date(now.getTime() + JWT_EXPIRATION);
@@ -59,6 +61,7 @@ public class JwtUtil {
                 .compact();
     }
 
+    // 리프레시 토큰입니다. 이건 좀 길게 갑니다.
     public String generateRefreshToken (Long userId){
         Date now = new Date();
         Date expiry = new Date(now.getTime() + JWT_REFRESH_EXPIRATION);
@@ -71,6 +74,7 @@ public class JwtUtil {
                 .compact();
     }
 
+    // 토큰 검증합니다. 위조된 거면 여기서 뱉어냅니다.
     public Long validateToken(String token){
         return Long.parseLong(
                 Jwts.parserBuilder()

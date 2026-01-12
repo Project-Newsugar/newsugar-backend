@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/quizzes")
 @Validated
 public class QuizController {
+
+    // 퀴즈 서비스랑 뉴스 서비스들 엮여있습니다. AI 클라이언트도 여기서 부릅니다.
     private final QuizService quizService;
     private final JwtService jwtService;
     private final NewsService newsService;
@@ -36,8 +38,9 @@ public class QuizController {
         this.rssNewsService = rssNewsService;
     }
 
-    
-
+    // 퀴즈 목록 조회하는 API입니다.
+    // scope=period로 기간 주면 그 사이꺼 다 주고, 아니면 그냥 오늘꺼 줍니다.
+    // playable 플래그 계산해서 같이 내려주니까 프론트에서 시간 계산하지 마세요.
     @GetMapping
     public ResponseEntity<ApiResult<java.util.List<QuizResponse>>> list(
             @RequestParam(name = "scope", required = false) String scope,
@@ -60,6 +63,8 @@ public class QuizController {
         return ResponseEntity.ok(ApiResult.ok(res));
     }
 
+    // 퀴즈 하나만 딱 집어서 가져옵니다.
+    // 없는 ID 달라고 하면 404 뱉거나 null 줄 겁니다.
     @GetMapping("/{id}")
     public ResponseEntity<ApiResult<QuizResponse>> get(@PathVariable Long id) {
         Quiz quiz = quizService.get(id);
@@ -70,6 +75,9 @@ public class QuizController {
         return ResponseEntity.ok(ApiResult.ok(res));
     }
 
+    // 특정 요약문 ID 가지고 퀴즈 생성 요청하는 겁니다.
+    // AI가 문제 만드느라 시간 좀 걸리니까 로딩바 돌리세요.
+    // 토큰 검사해서 유저 정보도 같이 넘깁니다.
     @PostMapping("/summary/{summaryId}/generate")
     public ResponseEntity<ApiResult<QuizResponse>> generateFromSummary(
             @PathVariable Long summaryId,
@@ -83,6 +91,9 @@ public class QuizController {
     }
 
 
+    // 메인 화면에 띄울 오늘의 퀴즈 생성합니다.
+    // 이미 만들어둔 거 있으면 그거 주고, 없으면 새로 만듭니다.
+    // 최근 6시간 내에 만든 거 찾아서 재탕합니다. AI 비용 아껴야죠.
     @PostMapping("/today-main/generate")
     public ResponseEntity<ApiResult<QuizResponse>> generateTodayMainQuiz(
             @RequestHeader("Authorization") String token

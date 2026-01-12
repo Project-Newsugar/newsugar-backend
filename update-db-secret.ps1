@@ -2,6 +2,10 @@
 # Terraform Apply 후 변경된 RDS Endpoint를 자동으로 K8s Secret에 업데이트하는 스크립트
 
 # 1. Terraform으로 클러스터 정보 갱신 (EKS 접속 정보가 바뀔 수 있음)
+Write-Host "Terraform 갱신 중..." -ForegroundColor Cyan
+terraform apply -auto-approve
+
+# 2. EKS 클러스터의 kubeconfig 업데이트
 Write-Host "Kubeconfig 업데이트 중..." -ForegroundColor Cyan
 aws eks update-kubeconfig --region ap-northeast-2 --name newsugar-prod-eks
 

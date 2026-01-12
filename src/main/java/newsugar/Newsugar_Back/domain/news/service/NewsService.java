@@ -39,8 +39,8 @@ public class NewsService {
         int currentPage = (page != null) ? page : 1;
         int currentPageSize = (page_size != null) ? page_size : 10;
         
-        // 날짜 필터링 범위 설정: 시작일(dateFrom)부터 종료일(오늘)까지
-        // date_to 파라미터가 없으면 API가 과거 데이터를 포함할 수 있으므로 명시적으로 지정
+        // 날짜 범위 잡는 건데, 끝 날짜 안 정해주면 API가 옛날 뉴스까지 다 긁어와서 오늘 날짜로 박아버립니다.
+        // date_to 없으면 과거 데이터 섞여 들어오니까 명시적으로 박아줍니다.
         LocalDate dateTo = LocalDate.now(java.time.ZoneId.of("Asia/Seoul"));
 
         UriComponentsBuilder builder =
@@ -56,7 +56,7 @@ public class NewsService {
             builder.queryParam("date_from", dateFrom.toString());
         }
 
-        // 복수 카테고리 처리
+        // 카테고리 여러 개 들어오면 여기서 URL 인코딩해서 합칩니다.
         if (categories != null && !categories.isEmpty()) {
             String categoryPath = categories.stream()
                     .map(c -> URLEncoder.encode(c, StandardCharsets.UTF_8))
@@ -79,7 +79,7 @@ public class NewsService {
         String url = builder.toUriString();
         DeepSearchResponseDTO response = restTemplate.getForObject(url, DeepSearchResponseDTO.class);
         
-        // API 응답 후 Java 레벨에서 날짜 필터링 수행 (API가 파라미터를 무시하거나 부정확한 경우 대비)
+        // API가 가끔 말 안 듣고 날짜 범위 무시할 때가 있어서, 자바에서 한 번 더 거릅니다.
         if (response != null && response.data() != null) {
             List<ArticleDTO> filteredData = filterByDate(response.data(), dateFrom, dateTo);
             return new DeepSearchResponseDTO(

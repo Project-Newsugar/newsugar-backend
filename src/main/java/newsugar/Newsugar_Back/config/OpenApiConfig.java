@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OpenApiConfig {
 
-        // 스웨거(OpenAPI) 기본 정보 및 JWT 보안 스키마 설정
+        // 스웨거(OpenAPI) 설정입니다. API 문서 자동으로 만들어주는 거고 JWT 인증도 테스트할 수 있게 해놨습니다.
         @Bean
         public OpenAPI openAPI() {
                 SecurityScheme bearer = new SecurityScheme()

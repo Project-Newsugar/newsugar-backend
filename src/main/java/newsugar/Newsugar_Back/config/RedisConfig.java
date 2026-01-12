@@ -29,7 +29,7 @@ public class RedisConfig {
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         LettuceConnectionFactory factory = new LettuceConnectionFactory(host, port);
-        factory.setValidateConnection(false); // 연결 실패해도 빈 생성 자체는 되도록 설정
+        factory.setValidateConnection(false); // 레디스 죽었다고 앱까지 죽으면 안 되니까 연결 실패해도 일단 넘어가게 해뒀습니다.
         return factory;
     }
 
