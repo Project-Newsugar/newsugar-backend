@@ -43,11 +43,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // 프론트엔드에서 요청 들어오는 거 허용해주는 겁니다. 로컬이랑 배포 주소 다 넣어놨습니다.
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:3000",
-                "http://localhost:5173",
-                "http://k8s-default-newsugar-8783aa5362-460fe716d7996751.elb.ap-northeast-2.amazonaws.com"
-        ));
+        configuration.addAllowedOriginPattern("*");
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
