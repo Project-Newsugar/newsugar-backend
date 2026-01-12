@@ -6,7 +6,6 @@ import newsugar.Newsugar_Back.domain.quiz.model.Quiz;
 import java.util.List;
 import java.time.Instant;
 
-@Service
 public interface QuizService {
     // 퀴즈 DB에 박습니다.
     Quiz create(Quiz quiz);
