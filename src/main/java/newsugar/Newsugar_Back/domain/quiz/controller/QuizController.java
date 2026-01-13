@@ -99,6 +99,11 @@ public class QuizController {
         java.time.Instant now = java.time.Instant.now();
         java.time.Instant from = now.minus(java.time.Duration.ofHours(6));
         java.util.List<Quiz> quizzes = quizService.listByPeriod(from, now.plus(java.time.Duration.ofHours(6)));
+        
+        // 퀴즈가 여러 개일 경우 최신순(ID 내림차순)으로 정렬하여 가장 최근에 생성된 퀴즈를 가져옵니다.
+        // 이렇게 해야 11시 퀴즈 대신 12시 퀴즈가 선택됩니다.
+        quizzes.sort((q1, q2) -> Long.compare(q2.getId(), q1.getId()));
+
         for (Quiz q : quizzes) {
             if ("오늘의 주요뉴스 퀴즈".equals(q.getTitle())) {
                 QuizResponse res = toResponse(q, false);
