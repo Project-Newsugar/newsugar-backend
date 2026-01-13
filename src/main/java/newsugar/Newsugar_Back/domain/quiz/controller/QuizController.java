@@ -10,6 +10,7 @@ import newsugar.Newsugar_Back.domain.quiz.dto.UserQuizStats;
 import newsugar.Newsugar_Back.domain.quiz.service.QuizService;
 import newsugar.Newsugar_Back.domain.news.service.NewsService;
 import newsugar.Newsugar_Back.domain.news.service.RssNewsService;
+import newsugar.Newsugar_Back.schedular.Schedular;
 import newsugar.Newsugar_Back.domain.ai.clients.AiQuizClient;
 import newsugar.Newsugar_Back.domain.news.dto.deepservicedto.ArticleDTO;
 import newsugar.Newsugar_Back.domain.news.dto.deepservicedto.DeepSearchResponseDTO;
@@ -23,19 +24,21 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class QuizController {
 
-    // QuizService, NewsService, AiQuizClient 의존성 주입
+    // QuizService, NewsService, AiQuizClient, Schedular 의존성 주입
     private final QuizService quizService;
     private final JwtService jwtService;
     private final NewsService newsService;
     private final RssNewsService rssNewsService;
     private final AiQuizClient aiQuizClient;
+    private final Schedular schedular;
 
-    public QuizController(QuizService quizService, JwtService jwtService, NewsService newsService, AiQuizClient aiQuizClient, RssNewsService rssNewsService) {
+    public QuizController(QuizService quizService, JwtService jwtService, NewsService newsService, AiQuizClient aiQuizClient, RssNewsService rssNewsService, Schedular schedular) {
         this.quizService = quizService;
         this.jwtService = jwtService;
         this.newsService = newsService;
         this.aiQuizClient = aiQuizClient;
         this.rssNewsService = rssNewsService;
+        this.schedular = schedular;
     }
 
     // 퀴즈 목록 조회 API (기간별/일별 조회 지원)
@@ -103,7 +106,25 @@ public class QuizController {
             }
         }
 
-        // 기존 스케줄러에서 생성된 퀴즈가 없다면 빈 응답 처리
+        // 오늘의 주요뉴스 퀴즈가 없으면 스케줄러를 강제로 돌려서라도 만들어냅니다.
+        // 이게 없으면 프론트에서 빈 화면만 보고 있을 테니까요.
+        System.out.println("오늘의 주요뉴스 퀴즈가 없어 즉시 생성을 시도합니다.");
+        try {
+            schedular.generateTodayMainContent(true);
+            
+            // 생성 후 다시 조회 (혹시나 생성되었는지 확인)
+            quizzes = quizService.listByPeriod(from, now.plus(java.time.Duration.ofHours(6)));
+            for (Quiz q : quizzes) {
+                if ("오늘의 주요뉴스 퀴즈".equals(q.getTitle())) {
+                    QuizResponse res = toResponse(q, false);
+                    return ResponseEntity.ok(ApiResult.ok(res));
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("퀴즈 강제 생성 중 오류 발생: " + e.getMessage());
+            // 오류가 나도 일단 null 반환 (클라이언트에서 처리하도록)
+        }
+
         return ResponseEntity.ok(ApiResult.ok(null));
     }
 

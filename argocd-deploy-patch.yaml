@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-server
+  namespace: argocd
+spec:
+  template:
+    spec:
+      containers:
+      - name: server
+        command:
+        - /usr/local/bin/argocd-server
+        args:
+        - --insecure
+        - --staticassets
+        - /shared/app
+        - --redis
+        - argocd-redis:6379
