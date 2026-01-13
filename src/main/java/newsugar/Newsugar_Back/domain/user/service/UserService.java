@@ -79,7 +79,7 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
-        // 가입했으니까 점수판 하나 만들어줍니다.
+        // 회원가입 시 점수 테이블 초기화
         scoreService.createScore(savedUser.getId());
 
         return savedUser;

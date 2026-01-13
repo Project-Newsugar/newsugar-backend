@@ -49,7 +49,7 @@ public class Question {
     @Column(name = "explanation", columnDefinition = "TEXT")
     private String explanation;
 
-    //이렇게 하면 question이 속한 퀴즈의 id를 알 수 있게 되는 거에요. 그냥 명찰 달아준거라 보시면 됩니다.
+    // Quiz 연관 관계 매핑
     @jakarta.persistence.ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;

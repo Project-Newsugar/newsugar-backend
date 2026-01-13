@@ -45,7 +45,7 @@ public class Quiz {
     @Column(name = "is_revealed")
     private Boolean isRevealed;
 
-    //이 코드가 이제 quiz에 질문이 너를 quiz라는 이름으로 가르키고 있다 라고 알려주는거에요.
+    // Question 연관 관계 매핑 (1:N)
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     @Default
     private List<Question> questions = new ArrayList<>();

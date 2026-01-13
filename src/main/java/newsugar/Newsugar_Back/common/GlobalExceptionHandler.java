@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 들어온 값이 이상하면 여기서 막습니다. 400 에러 던집니다.
+    // 유효성 검사 실패 시 400 반환
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResult<Void>> handleValidation(MethodArgumentNotValidException ex) {
         ex.printStackTrace();
@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResult.error(ErrorCode.BAD_REQUEST.name(), "유효성 오류"));
     }
 
-    // 인자 잘못 넣으면 여기서 걸립니다.
+    // 잘못된 인자 전달 시 400 반환
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResult<Void>> handleIllegalArgument(IllegalArgumentException ex) {
         ex.printStackTrace();
@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResult.error(ErrorCode.BAD_REQUEST.name(), ex.getMessage()));
     }
 
-    // 웬만하면 여기까지 안 와야 하는데, 진짜 모르는 에러 터지면 여기서 잡습니다. 500 에러.
+    // 서버 내부 오류 발생 시 500 반환
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResult<Void>> handleException(Exception ex) {
         ex.printStackTrace();
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResult.error(ErrorCode.INTERNAL_ERROR.name(), "서버 오류"));
     }
 
-    // 헤더에 토큰 없으면 문전박대합니다.
+    // 인증 헤더 누락 시 401 반환
     @ExceptionHandler(org.springframework.web.bind.MissingRequestHeaderException.class)
     public ResponseEntity<ApiResult<Void>> handleMissingHeader(org.springframework.web.bind.MissingRequestHeaderException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
@@ -46,10 +46,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ApiResult<Void>> handleCustomException(CustomException ex) {
-        ex.printStackTrace(); // 로그 남겨야 나중에 범인 잡습니다.
+        ex.printStackTrace(); // 디버깅용 스택 트레이스 출력
         HttpStatus status;
 
-        // ErrorCode 보고 적절한 HTTP 상태 코드 찍어줍니다.
+        // ErrorCode 기반 HTTP 상태 코드 매핑
         switch (ex.getErrorCode()) {
             case CONFLICT -> status = HttpStatus.CONFLICT;
             case BAD_REQUEST -> status = HttpStatus.BAD_REQUEST;
